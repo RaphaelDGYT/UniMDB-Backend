@@ -1,6 +1,12 @@
-﻿namespace UniMDB.Infrastructure.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using UniMDB.Domain.Entities;
 
-public class AppDbContext
+namespace UniMDB.Infrastructure.Data;
+
+public class AppDbContext : DbContext
 {
-    
+    public AppDbContext(DbContextOptions options) : base(options) { }
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 }
