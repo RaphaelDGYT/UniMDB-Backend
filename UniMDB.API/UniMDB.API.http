@@ -1,6 +1,6 @@
 @UniMDB.API_HostAddress = http://localhost:5254
 
-GET {{UniMDB.API_HostAddress}}/weatherforecast/
+GET {{UniMDB.API_HostAddress}}/api/User/getall
 Accept: application/json
 
 ###

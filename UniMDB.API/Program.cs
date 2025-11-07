@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using UniMDB.Application.Services;
 using UniMDB.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,24 +9,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var Env_Var = builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
-string connectionString = $"Server = {Environment.GetEnvironmentVariable("RAILWAY_TCP_PROXY_DOMAIN") ?? Env_Var["MYSQLHOST"]}; " +
-                            $"Port = {Environment.GetEnvironmentVariable("RAILWAY_TCP_PROXY_PORT") ?? Env_Var["MYSQLPORT"]}; " +
-                            $"Uid = {Environment.GetEnvironmentVariable("MYSQLUSER") ?? Env_Var["MYSQLUSER"]}; " +
-                            $"Pwd = {Environment.GetEnvironmentVariable("MYSQLPASSWORD") ?? Env_Var["MYSQLPASSWORD"]}; " +
-                            $"Database = {Environment.GetEnvironmentVariable("MYSQLDATABASE") ?? Env_Var["MYSQLDATABASE"]};";
+// Conexão ao Banco de Dados
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    //  Obtem a string de conexão pelas variaveis de ambiente do Railway, caso não conseguir, usa 
+    //  o 'user-secrets' para procurar a variável. Isso é útil especialmente para quando não estivermos em produção
+    var Env_Var = builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
 
-Console.WriteLine(connectionString);
+    string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? Env_Var["ConnectionString"];
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(
-    connectionString,
-    ServerVersion.AutoDetect(connectionString)
-));
+    if (connectionString == null)
+    {
+        throw new Exception("Erro na Connection String");
+    }
+
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), opt =>
+    {
+        opt.MigrationsAssembly("UniMDB.API");
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//  Configurações feitas para quando estivermos em produção apenas
 if (!app.Environment.IsDevelopment())
 {
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8081";
