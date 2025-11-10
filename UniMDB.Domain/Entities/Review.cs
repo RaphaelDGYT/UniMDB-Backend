@@ -1,6 +1,20 @@
-﻿namespace UniMDB.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UniMDB.Domain.Entities;
+
+//  Essa classe será o modelo que enviaremos pro Migrations para traduzir as propriedas aqui presente 
+//  para os atributos da tabela 'Reviews'
 
 public class Review
 {
-    
+    public uint id_review { get; set; }
+    public uint id_review_user { get; set; }
+    [StringLength(maximumLength:10, MinimumLength = 10)]
+    public string id_movie_mdb { get; set; }
+    [Range(0, 10)]
+    public byte review { get; set; }
+    public string comment { get; set; }
+    public DateTime created_at { get; set; }
+
+    public virtual User user { get; set; }
 }
