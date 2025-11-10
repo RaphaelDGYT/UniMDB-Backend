@@ -1,48 +1,93 @@
-﻿using UniMDB.Application.Dtos;
+﻿using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using UniMDB.Application.Dtos;
 using UniMDB.Domain.Entities;
-using UniMDB.Infrastructure.Data;
+using UniMDB.Domain.Interfaces;
 
-namespace UniMDB.Application.Services;
-
-//  Aqui vai ficar todas as implementações que envolvam o banco de dados e os usuários
-
-//  TODO: Fazer as implementações   xD
-
-public class UserService : IUserService
+namespace UniMDB.Application.Services
 {
-    private readonly ApplicationDbContext _appDbContext;
-    public UserService(ApplicationDbContext appDbContext)
+    public class UserService : IUserService
     {
-        _appDbContext = appDbContext;
-    }
+        private readonly IUserRepository _userRepository;
+        public UserService(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
 
-    public Task<bool> DeleteUser(uint id)
-    {
-        throw new NotImplementedException();
-    }
+        public async Task<UserResponseAPI> AddUser(UserRegistration dto)
+        {
+            var user = new User
+            {
+                Name = dto.Name,
+                Username = dto.Username,
+                Email = dto.Email,
+                Password = HashPassword(dto.Password)
+            };
 
-    public Task<List<UserResponseAPI>> GetAllUsers()
-    {
-        throw new NotImplementedException();
-    }
+            var createdUser = await _userRepository.CreateAsync(user);
 
-    public Task<UserResponseAPI> GetUser(uint id)
-    {
-        throw new NotImplementedException();
-    }
+            return new UserResponseAPI
+            {
+                Id = createdUser.Id_user,
+                Username = createdUser.Username,
+                Email = createdUser.Email
+            };
+        }
 
-    public Task<UserResponseAPI> AddUser(UserRegistration user)
-    {
-        throw new NotImplementedException();
-    }
+        public async Task<bool> DeleteUser(uint id)
+        {
+            return await _userRepository.DeleteAsync(id);
+        }
 
-    public Task<UserResponseAPI> UpdateUser(uint id, UserRegistration user)
-    {
-        throw new NotImplementedException();
-    }
+        public async Task<List<UserResponseAPI>> GetAllUsers()
+        {
+            var users = await _userRepository.GetAllAsync();
+            var list = new List<UserResponseAPI>();
+            foreach (var u in users)
+            {
+                list.Add(new UserResponseAPI { Id = u.Id_user, Username = u.Username, Email = u.Email });
+            }
+            return list;
+        }
 
-    Task<User> IUserService.GetUserByReview(uint id_review)
-    {
-        throw new NotImplementedException();
+        public async Task<UserResponseAPI?> GetUser(uint id)
+        {
+            var u = await _userRepository.GetByIdAsync(id);
+            if (u == null) return null;
+            return new UserResponseAPI { Id = u.Id_user, Username = u.Username, Email = u.Email };
+        }
+
+        public async Task<UserResponseAPI?> UpdateUser(uint id, UserRegistration dto)
+        {
+            var existing = await _userRepository.GetByIdAsync(id);
+            if (existing == null) return null;
+
+            existing.Username = dto.Username;
+            existing.Email = dto.Email;
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+                existing.Password = HashPassword(dto.Password);
+
+            var updated = await _userRepository.UpdateAsync(existing);
+            return new UserResponseAPI { Id = updated!.Id_user, Username = updated.Username, Email = updated.Email };
+        }
+
+        public async Task<User> GetUserByReview(uint id_review)
+        {
+            var user = await _userRepository.GetUserByReviewAsync(id_review);
+            return user!;
+        }
+
+        // método simples de hash (SHA256). Em produção, use BCrypt/Argon2.
+        
+        private string HashPassword(string password)
+        {
+            using var sha = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
+        
     }
 }

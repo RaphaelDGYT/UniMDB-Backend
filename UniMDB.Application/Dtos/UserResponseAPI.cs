@@ -4,11 +4,11 @@
 
 public class UserResponseAPI
 {
-    public uint id { get; set; }
-    public string name { get; set; }
-    public string username { get; set; }
-    public string email { get; set; }
-    public string password { get; set; }
-    public uint total_reviews { get; set; }
+    public uint Id { get; set; }
+    public string Name { get; set; }  = string.Empty;
+    public string Username { get; set; }  = string.Empty;
+    public string Email { get; set; }  = string.Empty;
+    public string Password { get; set; }  = string.Empty;
+    public uint Total_reviews { get; set; }  
     public List<uint> ids_reviews { get; set; }
 }

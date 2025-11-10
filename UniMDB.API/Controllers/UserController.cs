@@ -2,7 +2,7 @@
 using UniMDB.Application.Dtos;
 using UniMDB.Application.Services;
 using UniMDB.Domain.Entities;
-
+using UniMDB.Domain.Interfaces;
 namespace UniMDB.API.Controllers;
 
 /*
@@ -94,7 +94,7 @@ public class UserController : ControllerBase
 
             if (userNovo.GetType() == typeof(UserResponseAPI))
             {
-                return CreatedAtAction("Usuário adicionado", user);
+                return CreatedAtAction(nameof(GetUser), new {id = userNovo.Id}, userNovo);
             }
 
             return BadRequest(user);

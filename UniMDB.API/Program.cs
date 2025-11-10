@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using UniMDB.Application.Services;
 using UniMDB.Infrastructure.Data;
+using UniMDB.Domain.Interfaces; 
+using UniMDB.Infrastructure.Repositories; 
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +14,23 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Conexão ao Banco de Dados
+builder.Services.AddScoped<IReviewService, ReviewService>();
+
+
+
+
+
+// Conexï¿½o ao Banco de Dados
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    //  Obtem a string de conexão pelas variaveis de ambiente do Railway, caso não conseguir, usa 
-    //  o 'user-secrets' para procurar a variável. Isso é útil especialmente para quando não estivermos em produção
+    //  Obtem a string de conexï¿½o pelas variaveis de ambiente do Railway, caso nï¿½o conseguir, usa 
+    //  o 'user-secrets' para procurar a variï¿½vel. Isso ï¿½ ï¿½til especialmente para quando nï¿½o estivermos em produï¿½ï¿½o
     var Env_Var = builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
 
-    string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? Env_Var["ConnectionString"];
+    string? connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? Env_Var["ConnectionString"]
+                                                                    ?? "Server=shinkansen.proxy.rlwy.net;Port=50334;Database=railway;User=root;Password=XbJaZGCKLonxNxnybAPlZnfvdfOaktia;";
 
     if (connectionString == null)
     {
@@ -34,11 +45,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
-//  Configurações feitas para quando estivermos em produção apenas
+//  Configuraï¿½ï¿½es feitas para quando estivermos em produï¿½ï¿½o apenas
 if (!app.Environment.IsDevelopment())
 {
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8081";
     builder.WebHost.UseUrls($"http://*:{port}");
+}
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        if (db.Database.CanConnect())
+            Console.WriteLine("ConexÃ£o com o banco de dados OK!");
+        else
+            Console.WriteLine("Falha ao conectar ao banco de dados.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro: {ex.Message}");
+    }
 }
 
 app.UseSwagger();

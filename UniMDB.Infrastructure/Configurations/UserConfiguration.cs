@@ -11,7 +11,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(u => u.id_user);
+        builder.HasKey(u => u.Id_user);
+        
 
         builder
             .HasMany(u => u.reviews)
@@ -19,14 +20,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(r => r.id_review_user)
             .IsRequired(false);
 
-        builder.Property(u => u.name)
+        builder.Property(u => u.Name)
+            .HasColumnName("name")
             .IsRequired();
-        builder.Property(u => u.email) 
+        builder.Property(u => u.Username)
+            .HasColumnName("username")
             .IsRequired();
-        builder.Property(u => u.password)
+        builder.Property(u => u.Email)
+            .HasColumnName("email")
             .IsRequired();
-        builder.Property(u => u.username)
+        builder.Property(u => u.Password)
+            .HasColumnName("password")
             .IsRequired();
-    }
 
+    }
 }

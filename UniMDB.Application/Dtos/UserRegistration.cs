@@ -4,8 +4,8 @@
 
 public class UserRegistration
 {
-    public string name { get; set; }
-    public string username { get; set; }
-    public string email { get; set; }
-    public string password { get; set; }
+    public string Name { get; set; }  = string.Empty;
+    public string Username { get; set; }  = string.Empty;
+    public string Email { get; set; }  = string.Empty;
+    public string Password { get; set; }  = string.Empty;
 }
