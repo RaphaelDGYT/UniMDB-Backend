@@ -9,9 +9,12 @@ namespace UniMDB.Application.Services;
 public interface IUserService
 {
     // CRUD
-    Task<UserResponseAPI> GetUser(string email, string passworld);
+    Task<UserResponseAPI> GetUser(uint id);
+    Task<List<UserResponseAPI>> GetAllUsers();
     Task<UserResponseAPI> AddUser(UserRegistration user);
     Task<UserResponseAPI> UpdateUser(uint id, UserRegistration user);
     Task<bool> DeleteUser(uint id);
 
+    // Outras
+    Task<User> GetUserByReview(uint id_review);
 }
