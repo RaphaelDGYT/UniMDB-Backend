@@ -25,33 +25,19 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpGet("getall")]
-    public async Task<ActionResult<List<UserResponseAPI>>> GetAllUsers()
-    {
-        try
-        {
-            var users = await _userService.GetAllUsers();
 
-            return Ok(users);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
-
-    [HttpGet("get/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> GetUser(uint id)
+    [HttpGet("get/{email,passworld}")]
+    public async Task<ActionResult<UserResponseAPI>> GetUser(string email, string passworld)
     {
 
         try
         {
 
-            var user = await _userService.GetUser(id);
+            var user = await _userService.GetUser(email, passworld);
 
             if (user == null)
             {
-                return NotFound($"ID {id} não foi encontrado");
+                return NotFound($"email ou senha errado");
             }
 
             return Ok(user);
@@ -62,28 +48,7 @@ public class UserController : ControllerBase
         }
 
     }
-
-    [HttpGet("getbyreview/{id}")]
-    public async Task<ActionResult<User>> GetUserByReview(uint id_review)
-    {
-
-        try
-        { 
-            var user = await _userService.GetUserByReview(id_review);
-
-            if (user == null)
-            {
-                return NotFound($"Usuário não foi encontrado");
-            }
-
-            return Ok(user);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-
-    }
+    
 
     [HttpPost("add")]
     public async Task<ActionResult<UserResponseAPI>> AddUser(UserRegistration user)
