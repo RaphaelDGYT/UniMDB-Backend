@@ -1,48 +1,162 @@
 ﻿using UniMDB.Application.Dtos;
 using UniMDB.Domain.Entities;
-using UniMDB.Infrastructure.Data;
+using UniMDB.Domain.Interfaces;
 
 namespace UniMDB.Application.Services;
 
-//  Aqui vai ficar todas as implementações que envolvam o banco de dados e os usuários
-
-//  TODO: Fazer as implementações   xD
-
 public class UserService : IUserService
 {
-    private readonly ApplicationDbContext _appDbContext;
-    public UserService(ApplicationDbContext appDbContext)
+    private readonly IUserRepository _userRepository;
+    public UserService(IUserRepository userRepository)
     {
-        _appDbContext = appDbContext;
+        _userRepository = userRepository;
     }
 
-    public Task<bool> DeleteUser(uint id)
+
+    public async Task<UserResponseAPI> AddUser(UserRegistration user)
     {
-        throw new NotImplementedException();
+        try
+        {
+
+            var userNovo = await _userRepository.AddUserAsync(new User {
+
+                id_user = 0,
+                name = user.Name,
+                username = user.Username,
+                email = user.Email,
+                password = user.Password
+
+            });
+
+            return new UserResponseAPI
+            {
+                Id = userNovo.id_user,
+                Name = userNovo.name,
+                Username = userNovo.username,
+                Email = userNovo.email,
+                Password = userNovo.password,
+                Ids_reviews = new List<uint>()
+            };
+
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    public async Task<bool> DeleteUser(uint id)
+    {
+        return await _userRepository.DeleteUserAsync(id);
+    }
+    public async Task<UserResponseAPI> GetUser(uint id)
+    {
+        try
+        {
+
+            var user = await _userRepository.GetUserByIdAsync(id);
+            var review = await _userRepository.GetAllReviewsByUserIdAsync(id);
+
+            List<uint> ids_reviews = review.Select(r => r.id_review).ToList();
+
+            return new UserResponseAPI {
+                Id = user.id_user,
+                Name = user.name,
+                Username = user.username,
+                Email = user.email,
+                Password = user.password,
+                Ids_reviews = ids_reviews
+            };
+
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    public async Task<UserResponseAPI> GetUserSession(UserLogin userSession)
+    {
+        try
+        {
+
+            var user = await _userRepository.GetUserBySessionAsync(new User 
+            { 
+                username = userSession.Username,
+                password = userSession.Password,
+                email = userSession.Email
+            });
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            var review = await _userRepository.GetAllReviewsByUserIdAsync(user.id_user);
+
+            List<uint> ids_reviews = review.Select(r => r.id_review).ToList();
+
+            return new UserResponseAPI
+            {
+                Id = user.id_user,
+                Name = user.name,
+                Username = user.username,
+                Email = user.email,
+                Password = user.password,
+                Ids_reviews = ids_reviews
+            };
+
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    public async Task<UserResponseAPI> UpdateUser(UserRegistration user)
+    {
+        try
+        {
+            var userExistente = await _userRepository.GetUserBySessionAsync(new User
+            {
+                username = user.Username,
+                password = user.Password,
+                email = user.Email
+            });
+
+            var userNovo = new User()
+            {
+                id_user = userExistente.id_user,
+                email = user.Email,
+                name = user.Name,
+                password = user.Password,
+                username = user.Username
+            };
+
+            await _userRepository.UpdateUserAsync(userNovo);
+
+            var review = await _userRepository.GetAllReviewsByUserIdAsync(userNovo.id_user);
+
+            List<uint> ids_reviews = review.Select(r => r.id_review).ToList();
+
+            return new UserResponseAPI
+            {
+                Id = userNovo.id_user,
+                Name = userNovo.name,
+                Username = userNovo.username,
+                Email = userNovo.email,
+                Password = userNovo.password,
+                Ids_reviews = ids_reviews
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
-    public Task<List<UserResponseAPI>> GetAllUsers()
-    {
-        throw new NotImplementedException();
-    }
+    /*
+        Task<User> IUserService.GetUserByReview(uint id_review)
+        {
+            throw new NotImplementedException();
+        }
+    */
 
-    public Task<UserResponseAPI> GetUser(uint id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<UserResponseAPI> AddUser(UserRegistration user)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<UserResponseAPI> UpdateUser(uint id, UserRegistration user)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<User> IUserService.GetUserByReview(uint id_review)
-    {
-        throw new NotImplementedException();
-    }
 }

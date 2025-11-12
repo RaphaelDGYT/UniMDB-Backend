@@ -2,8 +2,6 @@
 
 namespace UniMDB.Domain.Entities;
 
-//  Essa classe será o modelo que enviaremos pro Migrations para traduzir as propriedas aqui presente 
-//  para os atributos da tabela 'Users'
 public class User
 {
     public uint id_user { get; set; }

@@ -5,40 +5,16 @@ using UniMDB.Domain.Entities;
 
 namespace UniMDB.API.Controllers;
 
-/*
- 
-    As classes Controllers não vão ser responsáveis pela implementação das funções que envolvam o banco de dados
-    diretamente, aqui somente vamos implementar na API. Essa implementação com o banco de dados será feita no
-    Applications.Services
-
-*/
-
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-
     public UserController(IUserService userService)
     {
         _userService = userService;
     }
 
-
-    [HttpGet("getall")]
-    public async Task<ActionResult<List<UserResponseAPI>>> GetAllUsers()
-    {
-        try
-        {
-            var users = await _userService.GetAllUsers();
-
-            return Ok(users);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
 
     [HttpGet("get/{id}")]
     public async Task<ActionResult<UserResponseAPI>> GetUser(uint id)
@@ -63,17 +39,20 @@ public class UserController : ControllerBase
 
     }
 
-    [HttpGet("getbyreview/{id}")]
-    public async Task<ActionResult<User>> GetUserByReview(uint id_review)
+    // TODO: Implementas Sessions
+    // Essa função depende disso pra funcionar, então atualmente não está funcionando
+    [HttpGet("getsession")]
+    public async Task<ActionResult<UserResponseAPI>> GetUserSession(UserLogin user_session)
     {
 
         try
-        { 
-            var user = await _userService.GetUserByReview(id_review);
+        {
+
+            var user = await _userService.GetUserSession(user_session);
 
             if (user == null)
             {
-                return NotFound($"Usuário não foi encontrado");
+                return NotFound($"O usuário {user_session.Username} não foi encontrado");
             }
 
             return Ok(user);
@@ -85,6 +64,30 @@ public class UserController : ControllerBase
 
     }
 
+    /*
+            [HttpGet("getbyreview/{id}")]
+            public async Task<ActionResult<User>> GetUserByReview(uint id_review)
+            {
+
+                try
+                { 
+                    var user = await _userService.GetUserByReview(id_review);
+
+                    if (user == null)
+                    {
+                        return NotFound($"Usuário não foi encontrado");
+                    }
+
+                    return Ok(user);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+                }
+
+            }
+    */
+
     [HttpPost("add")]
     public async Task<ActionResult<UserResponseAPI>> AddUser(UserRegistration user)
     {
@@ -92,9 +95,9 @@ public class UserController : ControllerBase
         {
             var userNovo = await _userService.AddUser(user);
 
-            if (userNovo.GetType() == typeof(UserResponseAPI))
+            if (userNovo != null)
             {
-                return CreatedAtAction("Usuário adicionado", user);
+                return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
             }
 
             return BadRequest(user);
@@ -111,7 +114,14 @@ public class UserController : ControllerBase
 
         try
         {
-            var userAtualizado = await _userService.UpdateUser(id, userNovo);
+            var userExistente = await _userService.GetUser(id);
+
+            if (userExistente == null)
+            {
+                return BadRequest(userNovo);
+            }
+
+            var userAtualizado = await _userService.UpdateUser(userNovo);
 
             if (userAtualizado.GetType() == typeof(UserResponseAPI))
             {

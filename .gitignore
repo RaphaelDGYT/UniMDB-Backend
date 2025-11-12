@@ -416,3 +416,5 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/UniMDB.API/Utils
+/UniMDB.API/libman.json

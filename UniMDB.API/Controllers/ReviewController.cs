@@ -5,14 +5,6 @@ using UniMDB.Domain.Entities;
 
 namespace UniMDB.API.Controllers;
 
-/*
- 
-    As classes Controllers não vão ser responsáveis pela implementação das funções que envolvam o banco de dados
-    diretamente, aqui somente vamos implementar na API. Essa implementação com o banco de dados será feita no
-    Applications.Services
-
-*/
-
 [ApiController]
 [Route("api/[controller]")]
 public class ReviewController : ControllerBase

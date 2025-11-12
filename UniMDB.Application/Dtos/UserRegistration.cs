@@ -1,11 +1,11 @@
 ﻿namespace UniMDB.Application.Dtos;
 
-//  DTO usado para a API obter apenas as partes importantes para cadastrar um usuário
+//  DTO começam com maiuscula
 
 public class UserRegistration
 {
-    public string name { get; set; }
-    public string username { get; set; }
-    public string email { get; set; }
-    public string password { get; set; }
+    public string Name { get; set; } = String.Empty;
+    public string Username { get; set; } = String.Empty;
+    public string Email { get; set; } = String.Empty;
+    public string Password { get; set; } = String.Empty;
 }

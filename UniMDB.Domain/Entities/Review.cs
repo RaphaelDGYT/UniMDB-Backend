@@ -1,10 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace UniMDB.Domain.Entities;
-
-//  Essa classe será o modelo que enviaremos pro Migrations para traduzir as propriedas aqui presente 
-//  para os atributos da tabela 'Reviews'
-
 public class Review
 {
     public uint id_review { get; set; }

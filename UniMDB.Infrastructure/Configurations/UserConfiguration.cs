@@ -3,9 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UniMDB.Domain.Entities;
 
 namespace UniMDB.Infrastructure.Configurations;
-
-//  Todas as configurações envolvendo a tabela 'Users', ou seja, os relacionamentos, valores defaults e etc
-
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
 
