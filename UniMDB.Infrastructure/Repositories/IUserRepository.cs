@@ -10,6 +10,7 @@ public interface IUserRepository
     Task<User> UpdateUserAsync(User user);
     Task<bool> DeleteUserAsync(uint id);
     Task<List<Review>> GetAllReviewsByUserIdAsync(uint id);
+    Task<List<uint>> GetAllUserIds();
 
     //Task<User?> GetUserByReviewAsync(uint reviewId);
 }

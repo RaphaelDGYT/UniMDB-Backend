@@ -151,7 +151,13 @@ public class UserService : IUserService
             throw;
         }
     }
+    public async Task<List<uint>> GetAllUserIds()
+    {
+        List<uint> lista_ids = await _userRepository.GetAllUserIds() ?? new List<uint>();
 
+        return lista_ids;
+
+    }
     /*
         Task<User> IUserService.GetUserByReview(uint id_review)
         {

@@ -101,7 +101,10 @@ public class UserRepository : IUserRepository
             throw; 
         }
     }
-
+    public async Task<List<uint>> GetAllUserIds()
+    {
+        return await _context.Users.Select(u => u.id_user).ToListAsync();
+    }
     /*
         public Task<User?> GetUserByReviewAsync(uint reviewId)
         {

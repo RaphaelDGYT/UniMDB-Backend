@@ -18,7 +18,7 @@ public class ReviewController : ControllerBase
 
 
     [HttpGet("get/{id}")]
-    public async Task<ActionResult<ReviewResponse>> GetReviewById(uint id)
+    public async Task<ActionResult<ReviewResponseAPI>> GetReviewById(uint id)
     {
 
         try
@@ -40,7 +40,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet("getall/{id_user}")]
-    public async Task<ActionResult<List<ReviewResponse>>> GetAllReviewsByUser(uint id_user)
+    public async Task<ActionResult<List<ReviewResponseAPI>>> GetAllReviewsByUser(uint id_user)
     {
         try
         {
@@ -81,7 +81,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpPut("update/{id}")]
-    public async Task<ActionResult<ReviewResponse>> UpdateReview(uint id, ReviewCreation review)
+    public async Task<ActionResult<ReviewResponseAPI>> UpdateReview(uint id, ReviewCreation review)
     {
         try
         {

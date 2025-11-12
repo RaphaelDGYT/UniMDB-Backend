@@ -10,5 +10,5 @@ public interface IReviewRepository
     Task<Review> UpdateReviewAsync(Review review);
     Task<bool> DeleteReviewAsync(uint id);
 
-    //Task<User?> GetUserByReviewAsync(uint reviewId);
+    Task<User> GetUserByReviewAsync(uint reviewId);
 }

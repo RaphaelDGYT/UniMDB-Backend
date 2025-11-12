@@ -8,9 +8,9 @@ namespace UniMDB.Application.Services;
 public interface IReviewService
 {
     // CRUD
-    Task<ReviewResponse> GetReviewById(uint id_review);
-    Task<List<ReviewResponse>> GetAllReviewsByUser(uint id_user);
-    Task<ReviewCreation> AddReview(ReviewCreation review);
-    Task<ReviewResponse> UpdateReview(uint id_review, ReviewCreation review);
+    Task<ReviewResponseAPI> GetReviewById(uint id_review);
+    Task<List<ReviewResponseAPI>> GetAllReviewsByUser(uint id_user);
+    Task<ReviewResponseAPI> AddReview(ReviewCreation review);
+    Task<ReviewResponseAPI> UpdateReview(uint id_review, ReviewCreation review);
     Task<bool> DeleteReview(uint id_review);
 }

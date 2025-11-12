@@ -13,29 +13,95 @@ public class ReviewRepository : IReviewRepository
         _context = context;
     }
 
-    public Task<Review> AddReviewAsync(Review review)
+    public async Task<Review> AddReviewAsync(Review review)
     {
-        throw new NotImplementedException();
+        try
+        {
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
+            return review;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
-    public Task<bool> DeleteReviewAsync(uint id)
+    public async Task<bool> DeleteReviewAsync(uint id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var review = await _context.Reviews.FindAsync(id);
+
+            if (review == null)
+                return false;
+
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
-    public Task<List<Review>> GetAllReviewsByUser(uint userId)
+    public async Task<List<Review>> GetAllReviewsByUser(uint userId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return await _context.Reviews.Where(r => r.id_review_user == userId).ToListAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
-    public Task<Review> GetReviewByIdAsync(uint id)
+    public async Task<Review> GetReviewByIdAsync(uint id)
     {
-        throw new NotImplementedException();
+        return await _context.Reviews.FindAsync(id);
     }
 
-    public Task<Review> UpdateReviewAsync(Review review)
+    public async Task<Review> UpdateReviewAsync(Review review)
     {
-        throw new NotImplementedException();
+        try
+        {
+            _context.Reviews.Update(review);
+            await _context.SaveChangesAsync();
+            return review;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
+    public async Task<User> GetUserByReviewAsync(uint reviewId)
+    {
+        try
+        {
+            var review = await _context.Reviews.FindAsync(reviewId);
+
+            if (review == null)
+            {
+                return null;
+            }
+
+            return await _context.Users.FindAsync(review.id_review_user);
+
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+
+    }
 }
