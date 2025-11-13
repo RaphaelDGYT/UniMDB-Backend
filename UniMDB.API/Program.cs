@@ -7,6 +7,8 @@ using UniMDB.API.Utils;
 using UniMDB.Infrastructure.Data;
 using UniMDB.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography.X509Certificates;
+using UniMDB.Application.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,48 +42,63 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateAsyncScope()) 
+{
+
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        if (!db.Database.CanConnect())
+            throw new Exception("\n\nErro: Não foi possível conectar no Banco de Dados\n\n");
+    }
+    catch (Exception)
+    {
+        throw;
+    }
+}
+
 if (!app.Environment.IsDevelopment())
 {
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8081";
     builder.WebHost.UseUrls($"http://*:{port}");
 }
-
-using (var scope = app.Services.CreateScope())
+else
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-    try
+    using (var scope = app.Services.CreateAsyncScope())
     {
-        if (db.Database.CanConnect())
-            Console.WriteLine("Conexão com o banco de dados OK!");
-        else
-            Console.WriteLine("Falha ao conectar ao banco de dados.");
+        var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+        UserService userService = new UserService(new UserRepository(db));
+        ReviewService reviewService = new ReviewService(new ReviewRepository(db));
+
+        const uint qntd_users_fakes = 0;
+        const uint qntd_reviews_fakes = 0;
 
 
-        var userServ = new UserService(new UserRepository(db));
-        var reviewServ = new ReviewService(new ReviewRepository(db));
+        List<UserRegistration> usuarios = new List<UserRegistration>();
 
-        const uint qntd_users_adicionar = 0;
-        const uint qntd_reviews_adicionar = 0;
-        
-        for (int i = 0; i < qntd_users_adicionar; i++)
+        for (int i = 0; i < qntd_users_fakes; i++)
         {
-            await userServ.AddUser(GerarDados.GerarUser());
+            usuarios.Add(GerarDados.GerarUser());
         }
 
-        var lista_ids = await userServ.GetAllUserIds();
+        await userService.AddBatchUser(usuarios);
 
-        for (int i = 0; i < qntd_reviews_adicionar; i++)
-        {
-            await reviewServ.AddReview(GerarDados.GerarReview(lista_ids));
-        }
+        //List<ReviewCreation> usuarios = new List<ReviewCreation>();
 
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Erro: {ex.Message}");
+        //for (int i = 0; i < qntd_users_fakes; i++)
+        //{
+        //    usuarios.Add(GerarDados.GerarUser());
+        //}
+
+        //await userService.AddBatchUser(usuarios);
+
+
+
     }
 }
+
+
 
 app.UseSwagger();
 app.UseSwaggerUI();

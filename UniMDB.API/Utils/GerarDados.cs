@@ -25,7 +25,7 @@ public static class GerarDados
                 .RuleFor(r => r.Id_User, f => f.PickRandom(lista_ids))
                 .RuleFor(r => r.Id_Movie, f => $"tt{f.Random.UInt(max: 9_999_999):0000000}")
                 .RuleFor(r => r.Score, f => f.Random.Byte(max: 10))
-                .RuleFor(r => r.Comment, f => f.Rant.Review("filme"));
+                .RuleFor(r => r.Comment, f => f.Rant.Review("movie"));
 
         return faker.Generate();
     }

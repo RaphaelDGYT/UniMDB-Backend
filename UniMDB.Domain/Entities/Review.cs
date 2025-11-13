@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UniMDB.Domain.Entities;
+
 public class Review
 {
     public uint id_review { get; set; }

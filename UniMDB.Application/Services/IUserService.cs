@@ -3,18 +3,27 @@ using UniMDB.Domain.Entities;
 
 namespace UniMDB.Application.Services;
 
-//  Um 'contrato' que obriga o UserServices a implementar todas essas funções
-//  Na prática isso aqui é a nossa lista de funções presentes na API
-
 public interface IUserService
 {
-    // CRUD
-    Task<UserResponseAPI> GetUser(uint id);
-    Task<UserResponseAPI> GetUserSession(UserLogin userSession);
+    // CREATE
     Task<UserResponseAPI> AddUser(UserRegistration user);
-    Task<UserResponseAPI> UpdateUser(UserRegistration user);
-    Task<bool> DeleteUser(uint id);
+    Task<List<UserResponseAPI>> AddBatchUser(List<UserRegistration> users);
 
-    // Outras
-    //Task<User> GetUserByReview(uint id_review);
+    // READ
+    Task<List<uint>> GetAllUserIds();
+    Task<UserResponseAPI> GetUserById(uint id);
+    Task<UserResponseAPI> GetUserBySession(UserLogin user);
+    Task<List<ReviewResponseAPI>> GetAllReviewsByUserId(uint id);
+
+    //Task<User> GetUserByReview(uint reviewId);
+
+
+    // UPDATE
+
+    // Talvez isso possa gerar problemas no futuro, mas por enquanto ta de boa
+    Task<User> UpdateUser(User user);
+    Task<List<User>> UpdateBatchUser(List<User> users);
+
+    // DELETE
+    Task<bool> DeleteUser(uint id);
 }

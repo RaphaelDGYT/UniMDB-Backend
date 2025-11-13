@@ -23,7 +23,7 @@ public class UserController : ControllerBase
         try
         {
 
-            var user = await _userService.GetUser(id);
+            var user = await _userService.GetUserById(id);
 
             if (user == null)
             {
@@ -48,7 +48,7 @@ public class UserController : ControllerBase
         try
         {
 
-            var user = await _userService.GetUserSession(user_session);
+            var user = await _userService.GetUserBySession(user_session);
 
             if (user == null)
             {
@@ -109,17 +109,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("update/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> UpdateUser(uint id, UserRegistration userNovo)
+    public async Task<ActionResult<UserResponseAPI>> UpdateUser(User userNovo)
     {
 
         try
         {
-            var userExistente = await _userService.GetUser(id);
-
-            if (userExistente == null)
-            {
-                return BadRequest(userNovo);
-            }
 
             var userAtualizado = await _userService.UpdateUser(userNovo);
 
