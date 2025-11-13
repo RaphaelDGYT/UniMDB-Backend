@@ -19,10 +19,8 @@ public interface IUserService
 
 
     // UPDATE
-
-    // Talvez isso possa gerar problemas no futuro, mas por enquanto ta de boa
-    Task<User> UpdateUser(User user);
-    Task<List<User>> UpdateBatchUser(List<User> users);
+    Task<UserResponseAPI> UpdateUser(uint id, UserRegistration userNovo);
+    Task<List<UserResponseAPI>> UpdateBatchUser(List<(uint, UserRegistration)> usersNovos);
 
     // DELETE
     Task<bool> DeleteUser(uint id);

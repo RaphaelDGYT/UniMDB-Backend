@@ -44,7 +44,7 @@ public class ReviewController : ControllerBase
     {
         try
         {
-            var reviews = await _reviewService.GetAllReviewsByUser(id_user);
+            var reviews = await _reviewService.GetAllReviewsByUserId(id_user);
 
             if (reviews == null)
             {
@@ -57,7 +57,7 @@ public class ReviewController : ControllerBase
         {
             return StatusCode(500, ex.Message);
         }
-        
+
     }
 
     [HttpPost("add")]

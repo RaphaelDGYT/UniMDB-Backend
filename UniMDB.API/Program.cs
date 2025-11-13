@@ -70,30 +70,34 @@ else
         var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
         UserService userService = new UserService(new UserRepository(db));
         ReviewService reviewService = new ReviewService(new ReviewRepository(db));
-
+        
         const uint qntd_users_fakes = 0;
         const uint qntd_reviews_fakes = 0;
 
-
-        List<UserRegistration> usuarios = new List<UserRegistration>();
-
-        for (int i = 0; i < qntd_users_fakes; i++)
+        if (qntd_users_fakes > 0)
         {
-            usuarios.Add(GerarDados.GerarUser());
+            List<UserRegistration> usuarios = new List<UserRegistration>();
+
+            for (int i = 0; i < qntd_users_fakes; i++)
+            {
+                usuarios.Add(GerarDados.GerarUser());
+            }
+
+            await userService.AddBatchUser(usuarios);
         }
 
-        await userService.AddBatchUser(usuarios);
+        if (qntd_reviews_fakes > 0)
+        {
+            List<uint> ids_usuarios = await userService.GetAllUserIds();
+            List<ReviewCreation> reviews = new List<ReviewCreation>();
 
-        //List<ReviewCreation> usuarios = new List<ReviewCreation>();
+            for (int i = 0; i < qntd_reviews_fakes; i++)
+            {
+                reviews.Add(GerarDados.GerarReview(ids_usuarios));
+            }
 
-        //for (int i = 0; i < qntd_users_fakes; i++)
-        //{
-        //    usuarios.Add(GerarDados.GerarUser());
-        //}
-
-        //await userService.AddBatchUser(usuarios);
-
-
+            await reviewService.AddBatchReview(reviews);
+        }
 
     }
 }

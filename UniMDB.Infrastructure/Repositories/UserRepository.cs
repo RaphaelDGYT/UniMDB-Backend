@@ -92,26 +92,58 @@ public class UserRepository : IUserRepository
     }
     
     // UPDATE
-    public async Task<User> UpdateUserAsync(User user)
+    public async Task<User> UpdateUserAsync(uint id, User userNovo)
     {
         try
         {
-            _context.Users.Update(user);
+            var userAchado = await _context.Users.FindAsync(id);
+
+            if (userAchado == null)
+            {
+                return null;
+            }
+
+            userNovo.id_user = userAchado.id_user;
+            userAchado.name = userNovo.name;
+            userAchado.username = userNovo.username;
+            userAchado.email = userNovo.email;
+            userAchado.password = userNovo.password;
+
             await _context.SaveChangesAsync();
-            return user;
+            return userAchado;
         }
         catch (Exception)
         {
             throw;
         }
     }
-    public async Task<List<User>> UpdateBatchUserAsync(List<User> users)
+    public async Task<List<User>> UpdateBatchUserAsync(List<(uint, User)> users)
     {
         try
         {
-            _context.Users.UpdateRange(users);
+
+            List<User> usersAlterados = new List<User>(users.Count);
+
+            foreach (var user in users)
+            {
+                var userAchado = await GetUserByIdAsync(user.Item1);
+
+                if (userAchado == null)
+                {
+                    continue;
+                }
+
+                user.Item2.id_user = userAchado.id_user;
+                userAchado.name = user.Item2.name;
+                userAchado.username = user.Item2.username;
+                userAchado.email = user.Item2.email;
+                userAchado.password = user.Item2.password;
+
+                usersAlterados.Add(userAchado);
+            }
+
             await _context.SaveChangesAsync();
-            return users;
+            return usersAlterados;
         }
         catch (Exception)
         {

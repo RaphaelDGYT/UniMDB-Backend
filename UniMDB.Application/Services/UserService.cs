@@ -32,7 +32,8 @@ public class UserService : IUserService
             Name = user.Name,
             Username = user.Username,
             Email = user.Email,
-            Password = user.Password
+            Password = user.Password,
+            Ids_reviews = Enumerable.Empty<uint>().ToList()
         };
     }
     public async Task<List<UserResponseAPI>> AddBatchUser(List<UserRegistration> users)
@@ -63,7 +64,8 @@ public class UserService : IUserService
                 Name = user.name,
                 Username = user.username,
                 Email = user.email,
-                Password = user.password
+                Password = user.password,
+                Ids_reviews = Enumerable.Empty<uint>().ToList()
             };
 
             userResponseAPIs.Add(userAdicionado);
@@ -80,7 +82,10 @@ public class UserService : IUserService
     public async Task<UserResponseAPI> GetUserById(uint id)
     {
         var user = await _userRepository.GetUserByIdAsync(id);
-    
+
+        var reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
+
+
         if (user == null)
         {
             return null;
@@ -92,7 +97,8 @@ public class UserService : IUserService
             Name = user.name,
             Username = user.username,
             Email = user.email,
-            Password = user.password
+            Password = user.password,
+            Ids_reviews = reviews.Select(u => u.id_review).ToList() ?? Enumerable.Empty<uint>().ToList()
         };
     }
     public async Task<UserResponseAPI> GetUserBySession(UserLogin user)
@@ -153,13 +159,69 @@ public class UserService : IUserService
     }
 
     // UPDATE
-    public async Task<List<User>> UpdateBatchUser(List<User> users)
+    public async Task<UserResponseAPI> UpdateUser(uint id, UserRegistration user)
     {
-        return await _userRepository.UpdateBatchUserAsync(users);
+        User userAlterado = new User
+        {
+            id_user = id,
+            name = user.Name,
+            username = user.Username,
+            email = user.Email,
+            password = user.Password
+        };
+
+        User userNovo = await _userRepository.UpdateUserAsync(id, userAlterado);
+
+        var reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
+
+        return new UserResponseAPI
+        {
+            Id = userNovo.id_user,
+            Name = userNovo.name,
+            Username = userNovo.username,
+            Email = userNovo.email,
+            Password = userNovo.password,
+            Ids_reviews = reviews.Select(r => r.id_review).ToList() ?? Enumerable.Empty<uint>().ToList()
+        };
     }
-    public async Task<User> UpdateUser(User user)
+    public async Task<List<UserResponseAPI>> UpdateBatchUser(List<(uint, UserRegistration)> users)
     {
-        return await _userRepository.UpdateUserAsync(user);
+        List<(uint, User)> usersAlterados = new List<(uint, User)>();
+
+        foreach (var user in users)
+        {
+            User userAlterado = new User
+            {
+                id_user = user.Item1,
+                name = user.Item2.Name,
+                username = user.Item2.Username,
+                email = user.Item2.Email,
+                password = user.Item2.Password
+            };
+
+            usersAlterados.Add((user.Item1, userAlterado));
+        }
+
+        List<User> usersNovos = await _userRepository.UpdateBatchUserAsync(usersAlterados);
+
+        List<UserResponseAPI> usersResponsesAPI = new List<UserResponseAPI>();
+
+        foreach (var user in usersNovos)
+        {
+            UserResponseAPI userResponse = new UserResponseAPI
+            {
+                Id = user.id_user,
+                Name = user.name,
+                Username = user.username,
+                Email = user.email,
+                Password = user.password,
+                Ids_reviews = user.reviews.Select(r => r.id_review).ToList() ?? Enumerable.Empty<uint>().ToList()
+            };
+
+            usersResponsesAPI.Add(userResponse);
+        }
+
+        return usersResponsesAPI;
     }
     
     // DELETE

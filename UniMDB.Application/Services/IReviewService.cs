@@ -1,16 +1,21 @@
 ﻿using UniMDB.Application.Dtos;
+using UniMDB.Domain.Entities;
 
 namespace UniMDB.Application.Services;
 
-//  Um 'contrato' que obriga o ReviewServices a implementar todas essas funções
-//  Na prática isso aqui é a nossa lista de funções presentes na API
-
 public interface IReviewService
 {
-    // CRUD
-    Task<ReviewResponseAPI> GetReviewById(uint id_review);
-    Task<List<ReviewResponseAPI>> GetAllReviewsByUser(uint id_user);
+    // CREATE
     Task<ReviewResponseAPI> AddReview(ReviewCreation review);
+    Task<List<ReviewResponseAPI>> AddBatchReview(List<ReviewCreation> reviews);
+
+    // READ
+    Task<ReviewResponseAPI> GetReviewById(uint id_review);
+    Task<List<ReviewResponseAPI>> GetAllReviewsByUserId(uint id);
+
+    // UPDATE
     Task<ReviewResponseAPI> UpdateReview(uint id_review, ReviewCreation review);
+    
+    // DELETE
     Task<bool> DeleteReview(uint id_review);
 }

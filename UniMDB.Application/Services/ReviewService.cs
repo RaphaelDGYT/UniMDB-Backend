@@ -18,81 +18,77 @@ public class ReviewService : IReviewService
         _reviewRepository = reviewRepository;
     }
 
-
+    // CREATE
     public async Task<ReviewResponseAPI> AddReview(ReviewCreation review)
     {
-        try
+        Review reviewAdicionar = new Review
         {
+            id_review = 0,
+            id_review_user = review.Id_User,
+            id_movie_mdb = review.Id_Movie,
+            review = review.Score,
+            comment = review.Comment,
+            created_at = DateTime.Now
+        };
 
-            var reviewNova = await _reviewRepository.AddReviewAsync(new Review
+        Review reviewNova = await _reviewRepository.AddReviewAsync(reviewAdicionar);
+
+        return new ReviewResponseAPI
+        {
+            Id = reviewNova.id_review,
+            Score = reviewAdicionar.review,
+            Comment = reviewAdicionar.comment,
+            Created_at = reviewAdicionar.created_at,
+            User = reviewNova.user
+        };
+    }
+    public async Task<List<ReviewResponseAPI>> AddBatchReview(List<ReviewCreation> reviews)
+    {
+        List<Review> batchReviews = new List<Review>();
+
+        foreach (var review in reviews)
+        {
+            batchReviews.Add(new Review
             {
-
                 id_review = 0,
                 id_review_user = review.Id_User,
                 id_movie_mdb = review.Id_Movie,
                 review = review.Score,
                 comment = review.Comment,
                 created_at = DateTime.Now
-
             });
+        }
 
-            var userReview = await _reviewRepository.GetUserByReviewAsync(reviewNova.id_review);
+        List<Review> reviewsAdicionadass = await _reviewRepository.AddBatchReviewAsync(batchReviews);
 
-            return new ReviewResponseAPI
+        List<ReviewResponseAPI> reviewResponseAPIs = new List<ReviewResponseAPI>();
+
+        foreach (var review in reviewsAdicionadass)
+        {
+            ReviewResponseAPI reviewAdicionada = new ReviewResponseAPI
             {
-                Id = reviewNova.id_review,
-                Score = review.Score,
-                Comment = review.Comment,
-                Created_at = reviewNova.created_at,
-                User = userReview
+                Id = review.id_review,
+                Score = review.review,
+                Comment = review.comment,
+                Created_at = review.created_at,
+                User = review.user
             };
 
+            reviewResponseAPIs.Add(reviewAdicionada);
         }
-        catch (Exception)
-        {
-            throw;
-        }
+
+        return reviewResponseAPIs;
     }
-
-    public async Task<bool> DeleteReview(uint id_review)
-    {
-        return await _reviewRepository.DeleteReviewAsync(id_review);
-    }
-
-    public async Task<List<ReviewResponseAPI>> GetAllReviewsByUser(uint id_user)
-    {
-        try
-        {
-            List<ReviewResponseAPI> lista_reviews = new List<ReviewResponseAPI>();
-
-            var reviews = await _reviewRepository.GetAllReviewsByUser(id_user);
-
-            foreach (var review in reviews)
-            {
-                ReviewResponseAPI reviewResponse = new ReviewResponseAPI()
-                { 
-                    Id = review.id_review,
-                    Score = review.review,
-                    Comment = review.comment,
-                    Created_at = review.created_at
-                };
-
-                lista_reviews.Add(reviewResponse);
-            }
-
-            return lista_reviews;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-
-    }
-
+    
+    // READ
     public async Task<ReviewResponseAPI> GetReviewById(uint id_review)
     {
         var review = await _reviewRepository.GetReviewByIdAsync(id_review);
-        var user = await _reviewRepository.GetUserByReviewAsync(id_review);
+
+        if (review == null)
+        {
+            return null;
+        }
 
         return new ReviewResponseAPI
         {
@@ -100,40 +96,66 @@ public class ReviewService : IReviewService
             Score = review.review,
             Comment = review.comment,
             Created_at = review.created_at,
-            User = user
+            User = review.user
         };
-    }
+    }   
 
+    
+    // FIX: Arrumar o retorno de User da ReviewResponse
+    public async Task<List<ReviewResponseAPI>> GetAllReviewsByUserId(uint id)
+        {
+            List<Review> reviews = await _reviewRepository.GetAllReviewsByUserIdAsync(id);
+
+            var x = reviews.First().user;
+
+
+            List<ReviewResponseAPI> reviewsResponsesAPI = new List<ReviewResponseAPI>(reviews.Count);
+
+            foreach (var review in reviews)
+            {
+                ReviewResponseAPI reviewResponse = new ReviewResponseAPI
+                {
+                    Id = review.id_review,
+                    Score = review.review,
+                    Comment = review.comment,
+                    Created_at = review.created_at,
+                    User = x
+                };
+
+                reviewsResponsesAPI.Add(reviewResponse);
+            }
+
+            return reviewsResponsesAPI;
+        }
+    
+    // UPDATE
     public async Task<ReviewResponseAPI> UpdateReview(uint id_review, ReviewCreation review)
     {
-        var reviewExistente = await _reviewRepository.GetReviewByIdAsync(id_review);
-
-        if (reviewExistente == null)
-        {
-            return null;
-        }
-
-        var user = await _reviewRepository.GetUserByReviewAsync(id_review);
-
-        Review novaReview = new Review
+        Review reviewAlterada = new Review
         {
             id_review = id_review,
-            id_review_user = reviewExistente.id_review_user,
-            id_movie_mdb = reviewExistente.id_movie_mdb,
+            id_review_user = review.Id_User,
+            id_movie_mdb = review.Id_Movie,
             review = review.Score,
-            comment = review.Comment,
-            created_at = reviewExistente.created_at
+            comment = review.Comment
         };
 
-        await _reviewRepository.UpdateReviewAsync(novaReview);
+        Review reviewNova = await _reviewRepository.UpdateReviewAsync(id_review, reviewAlterada);
 
         return new ReviewResponseAPI
         {
             Id = id_review,
-            Score = novaReview.review,
-            Comment = novaReview.comment,
-            Created_at = novaReview.created_at,
-            User = user
+            Score = reviewNova.review,
+            Comment = reviewNova.comment,
+            Created_at = reviewNova.created_at,
+            User = reviewNova.user
         };
     }
+    
+    // DELETE
+    public async Task<bool> DeleteReview(uint id_review)
+    {
+        return await _reviewRepository.DeleteReviewAsync(id_review);
+    }
+
 }

@@ -18,8 +18,8 @@ public interface IUserRepository
 
 
     // UPDATE
-    Task<User> UpdateUserAsync(User user);
-    Task<List<User>> UpdateBatchUserAsync(List<User> users);
+    Task<User> UpdateUserAsync(uint id, User userNovo);
+    Task<List<User>> UpdateBatchUserAsync(List<(uint, User)> usersNovos);
 
     // DELETE
     Task<bool> DeleteUserAsync(uint id);

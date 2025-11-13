@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bogus.Bson;
+using Microsoft.AspNetCore.Mvc;
 using UniMDB.Application.Dtos;
 using UniMDB.Application.Services;
 using UniMDB.Domain.Entities;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace UniMDB.API.Controllers;
 
@@ -16,43 +18,38 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpGet("get/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> GetUser(uint id)
+    // CREATE
+    [HttpPost("add"), Produces("application/json")]
+    public async Task<ActionResult<UserResponseAPI>> AddUser(UserRegistration user)
     {
-
         try
         {
+            var userNovo = await _userService.AddUser(user);
 
-            var user = await _userService.GetUserById(id);
-
-            if (user == null)
+            if (userNovo != null)
             {
-                return NotFound($"ID {id} não foi encontrado");
+                return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
             }
 
-            return Ok(user);
+            return BadRequest(user);
         }
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
         }
-
     }
-
-    // TODO: Implementas Sessions
-    // Essa função depende disso pra funcionar, então atualmente não está funcionando
-    [HttpGet("getsession")]
-    public async Task<ActionResult<UserResponseAPI>> GetUserSession(UserLogin user_session)
+    
+    // READ
+    [HttpGet("get/{id}"), Produces("application/json")]
+    public async Task<ActionResult<UserResponseAPI>> GetUser(uint id)
     {
-
         try
         {
-
-            var user = await _userService.GetUserBySession(user_session);
+            var user = await _userService.GetUserById(id);
 
             if (user == null)
             {
-                return NotFound($"O usuário {user_session.Username} não foi encontrado");
+                return NotFound($"ID {id} não foi encontrado");
             }
 
             return Ok(user);
@@ -87,35 +84,16 @@ public class UserController : ControllerBase
 
             }
     */
-
-    [HttpPost("add")]
-    public async Task<ActionResult<UserResponseAPI>> AddUser(UserRegistration user)
-    {
-        try
-        {
-            var userNovo = await _userService.AddUser(user);
-
-            if (userNovo != null)
-            {
-                return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
-            }
-
-            return BadRequest(user);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
-
+    
+    // UPDATE
     [HttpPut("update/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> UpdateUser(User userNovo)
+    public async Task<ActionResult<UserResponseAPI>> UpdateUser(uint id, UserRegistration userNovo)
     {
 
         try
         {
 
-            var userAtualizado = await _userService.UpdateUser(userNovo);
+            var userAtualizado = await _userService.UpdateUser(id, userNovo);
 
             if (userAtualizado.GetType() == typeof(UserResponseAPI))
             {
@@ -129,16 +107,17 @@ public class UserController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
-
+    
+    // DELETE
     [HttpDelete("delete/{id}")]
-    public async Task<ActionResult<User>> DeleteUser(uint id)
+    public async Task<ActionResult<bool>> DeleteUser(uint id)
     {
 
         try
         {
             var userDeletado = await _userService.DeleteUser(id);
 
-            if (userDeletado.GetType() == typeof(User))
+            if (userDeletado.GetType() == typeof(bool))
             {
                 return Ok(userDeletado);
             }
