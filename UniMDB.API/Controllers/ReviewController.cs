@@ -16,9 +16,9 @@ public class ReviewController : ControllerBase
         _reviewService = reviewService;
     }
 
-
+// [FromBody] e [FromQuery] para receber objetos do frontend, sendo o [FromBody] para alterar ou adcionar e o [FromQuery] executar uma busca por exemplo por email.
     [HttpGet("get/{id}")]
-    public async Task<ActionResult<ReviewResponseAPI>> GetReviewById(uint id)
+    public async Task<ActionResult<ReviewResponseAPI>> GetReviewById([FromQuery]uint id)
     {
 
         try
@@ -40,7 +40,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet("getall/{id_user}")]
-    public async Task<ActionResult<List<ReviewResponseAPI>>> GetAllReviewsByUser(uint id_user)
+    public async Task<ActionResult<List<ReviewResponseAPI>>> GetAllReviewsByUser([FromQuery]uint id_user)
     {
         try
         {
@@ -61,7 +61,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpPost("add")]
-    public async Task<ActionResult<ReviewCreation>> AddReview(ReviewCreation review)
+    public async Task<ActionResult<ReviewCreation>> AddReview([FromBody]ReviewCreation review)
     {
         try
         {
@@ -81,7 +81,7 @@ public class ReviewController : ControllerBase
     }
 
     [HttpPut("update/{id}")]
-    public async Task<ActionResult<ReviewResponseAPI>> UpdateReview(uint id, ReviewCreation review)
+    public async Task<ActionResult<ReviewResponseAPI>> UpdateReview([FromBody]uint id, ReviewCreation review)
     {
         try
         {

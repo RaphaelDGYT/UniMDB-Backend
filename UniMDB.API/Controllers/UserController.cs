@@ -20,7 +20,7 @@ public class UserController : ControllerBase
 
     // CREATE
     [HttpPost("add"), Produces("application/json")]
-    public async Task<ActionResult<UserResponseAPI>> AddUser(UserRegistration user)
+    public async Task<ActionResult<UserResponseAPI>> AddUser([FromBody]UserRegistration user)
     {
         try
         {
@@ -41,7 +41,7 @@ public class UserController : ControllerBase
     
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserResponseAPI>> GetUser(uint id)
+    public async Task<ActionResult<UserResponseAPI>> GetUser([FromQuery]uint id)
     {
         try
         {
@@ -87,7 +87,7 @@ public class UserController : ControllerBase
     
     // UPDATE
     [HttpPut("update/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> UpdateUser(uint id, UserRegistration userNovo)
+    public async Task<ActionResult<UserResponseAPI>> UpdateUser([FromBody]uint id, UserRegistration userNovo)
     {
 
         try
