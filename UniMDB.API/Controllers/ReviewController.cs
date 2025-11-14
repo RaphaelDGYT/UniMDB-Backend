@@ -17,17 +17,39 @@ public class ReviewController : ControllerBase
     }
 
 
-    [HttpGet("get/{id}")]
-    public async Task<ActionResult<ReviewResponseAPI>> GetReviewById(uint id)
+    // CREATE
+    [HttpPost("add"), Produces("application/json")]
+    public async Task<ActionResult<ReviewResponse>> AddReview(ReviewCreation review)
     {
-
         try
         {
-            var review = await _reviewService.GetReviewById(id);
+            ReviewResponse reviewNova = await _reviewService.AddReview(review);
 
-            if (review == null)
+            if (reviewNova.Id == 0)
             {
-                return NotFound($"ID {id} não foi encontrado");
+                return BadRequest(review);
+            }
+
+            return CreatedAtAction(nameof(GetReview), new { reviewNova.Id }, reviewNova);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    // READ
+    [HttpGet("get/{id}"), Produces("application/json")]
+    public async Task<ActionResult<ReviewResponse>> GetReview(uint id)
+    {
+        try
+        {
+            ReviewResponse review = await _reviewService.GetReviewById(id);
+
+            if (review.Id == 0)
+            {
+                review.Id = id;
+                return NotFound(review);
             }
 
             return Ok(review);
@@ -36,10 +58,10 @@ public class ReviewController : ControllerBase
         {
             return StatusCode(500, ex.Message);
         }
-        
     }
 
-    [HttpGet("getall/{id_user}")]
+    /*
+    [HttpGet("getall/{id_user}"), Produces("application/json")]
     public async Task<ActionResult<List<ReviewResponseAPI>>> GetAllReviewsByUser(uint id_user)
     {
         try
@@ -59,37 +81,19 @@ public class ReviewController : ControllerBase
         }
 
     }
+    */
 
-    [HttpPost("add")]
-    public async Task<ActionResult<ReviewCreation>> AddReview(ReviewCreation review)
+    // UPDATE
+    [HttpPut("update/{id}"), Produces("application/json")]
+    public async Task<ActionResult<ReviewResponse>> UpdateReview(uint id, ReviewUpdate reviewNova)
     {
         try
         {
-            var reviewNova = await _reviewService.AddReview(review);
+            ReviewResponse reviewAtualizada = await _reviewService.UpdateReview(id, reviewNova);
 
-            if (reviewNova == null)
+            if (reviewAtualizada.Id == 0)
             {
-                return BadRequest(review);
-            }
-
-            return CreatedAtAction("Review criada com sucesso", review);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
-
-    [HttpPut("update/{id}")]
-    public async Task<ActionResult<ReviewResponseAPI>> UpdateReview(uint id, ReviewCreation review)
-    {
-        try
-        {
-            var reviewAtualizada = await _reviewService.UpdateReview(id, review);
-
-            if (reviewAtualizada == null)
-            {
-                return BadRequest(review);
+                return BadRequest(reviewNova);
             }
 
             return Ok(reviewAtualizada);
@@ -100,25 +104,24 @@ public class ReviewController : ControllerBase
         }
     }
 
+    // DELETE
     [HttpDelete("delete/{id}")]
-    public async Task<ActionResult<Review>> DeleteUser(uint id)
+    public async Task<ActionResult<bool>> UpdateReview(uint id)
     {
-
         try
         {
-            var reviewDeletada = await _reviewService.DeleteReview(id);
+            bool reviewDeletada = await _reviewService.DeleteReview(id);
 
-            if (!reviewDeletada)
+            if (reviewDeletada)
             {
-                return BadRequest($"Não foi possível delete o ID ( {id} )");
+                return Ok(reviewDeletada);
             }
 
-            return Ok(reviewDeletada);
+            return BadRequest(reviewDeletada);
         }
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
         }
-
     }
 }

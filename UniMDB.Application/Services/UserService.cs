@@ -12,66 +12,81 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
+
     // CREATE
-    public async Task<UserResponseAPI> AddUser(UserRegistration user)
+    public async Task<UserResponse> AddUser(UserCreation user)
     {
-        User userAdicionar = new User
+        try
         {
-            id_user = 0,
-            name = user.Name,
-            username = user.Username,
-            email = user.Email,
-            password = user.Password
-        };
-
-        User userNovo = await _userRepository.AddUserAsync(userAdicionar);
-
-        return new UserResponseAPI 
-        {
-            Id = userNovo.id_user,
-            Name = user.Name,
-            Username = user.Username,
-            Email = user.Email,
-            Password = user.Password,
-            Ids_reviews = Enumerable.Empty<uint>().ToList()
-        };
-    }
-    public async Task<List<UserResponseAPI>> AddBatchUser(List<UserRegistration> users)
-    {
-        List<User> batchUsers = new List<User>();
-
-        foreach (var user in users)
-        {
-            batchUsers.Add(new User 
+            User userAdicionar = new User
             {
                 id_user = 0,
                 name = user.Name,
                 username = user.Username,
                 email = user.Email,
                 password = user.Password
-            });
-        }
-
-        List<User> usersAdicionados = await _userRepository.AddBatchUserAsync(batchUsers);
-
-        List<UserResponseAPI> userResponseAPIs = new List<UserResponseAPI>();
-
-        foreach (var user in usersAdicionados)
-        {
-            UserResponseAPI userAdicionado = new UserResponseAPI 
-            {
-                Id = user.id_user,
-                Name = user.name,
-                Username = user.username,
-                Email = user.email,
-                Password = user.password,
-                Ids_reviews = Enumerable.Empty<uint>().ToList()
             };
 
-            userResponseAPIs.Add(userAdicionado);
-        }
+            User userNovo = await _userRepository.AddUserAsync(userAdicionar);
 
-        return userResponseAPIs;
+            return new UserResponse
+            {
+                Id = userNovo.id_user,
+                Name = user.Name,
+                Username = user.Username,
+                Email = user.Email,
+                Password = user.Password,
+                Ids_reviews = Enumerable.Empty<uint>().ToList()
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    public async Task<List<UserResponse>> AddBatchUser(List<UserCreation> users)
+    {
+        try
+        {
+            List<User> batchUsers = new List<User>(users.Count);
+
+            foreach (var user in users)
+            {
+                batchUsers.Add(new User 
+                {
+                    id_user = 0,
+                    name = user.Name,
+                    username = user.Username,
+                    email = user.Email,
+                    password = user.Password
+                });
+            }
+
+            List<User> usersAdicionados = await _userRepository.AddBatchUserAsync(batchUsers);
+
+            // Resposta
+
+            List<UserResponse> usersResponses = new List<UserResponse>();
+
+            foreach (var user in usersAdicionados)
+            {
+                usersResponses.Add(new UserResponse
+                {
+                    Id = user.id_user,
+                    Name = user.name,
+                    Username = user.username,
+                    Email = user.email,
+                    Password = user.password,
+                    Ids_reviews = Enumerable.Empty<uint>().ToList()
+                });
+            }
+
+            return usersResponses;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     // READ
@@ -79,149 +94,228 @@ public class UserService : IUserService
     {
         return await _userRepository.GetAllUserIdsAsync();
     }
-    public async Task<UserResponseAPI> GetUserById(uint id)
+    public async Task<UserResponse> GetUserById(uint id)
     {
-        var user = await _userRepository.GetUserByIdAsync(id);
-
-        var reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
-
-
-        if (user == null)
+        try
         {
-            return null;
-        }
+            User? user = await _userRepository.GetUserByIdAsync(id);
 
-        return new UserResponseAPI 
-        {
-            Id = id,
-            Name = user.name,
-            Username = user.username,
-            Email = user.email,
-            Password = user.password,
-            Ids_reviews = reviews.Select(u => u.id_review).ToList() ?? Enumerable.Empty<uint>().ToList()
-        };
-    }
-    public async Task<UserResponseAPI> GetUserBySession(UserLogin user)
-    {
-        User userProcurar = new User 
-        {
-            username = user.Username,
-            password = user.Password,
-            email = user.Email
-        };
-
-        var userAchado = await _userRepository.GetUserBySessionAsync(userProcurar);
-
-        if (userAchado == null)
-        {
-            return null;
-        }
-
-        return new UserResponseAPI
-        {
-            Id = userAchado.id_user,
-            Name = userAchado.name,
-            Username = userAchado.username,
-            Email = userAchado.email,
-            Password = userAchado.password
-        };
-    }
-    public async Task<List<ReviewResponseAPI>> GetAllReviewsByUserId(uint id)
-    {
-
-        List<Review> reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
-
-        if (reviews.Count == 0)
-        {
-            return Enumerable.Empty<ReviewResponseAPI>().ToList();
-        }
-
-        User user = await _userRepository.GetUserByIdAsync(id);
-
-        List<ReviewResponseAPI> reviewsResponseAPIs = new List<ReviewResponseAPI>();
-
-        foreach (var review in reviews)
-        {
-
-            ReviewResponseAPI reviewResponse = new ReviewResponseAPI
+            if (user == null)
             {
-                Id = review.id_review,
-                Score = review.review,
-                Comment = review.comment,
-                Created_at = review.created_at,
-                User = user
-            };
+                return new UserResponse();
+            }
 
-            reviewsResponseAPIs.Add(reviewResponse);
-        }
+            List<Review> reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
 
-        return reviewsResponseAPIs;
-    }
-
-    // UPDATE
-    public async Task<UserResponseAPI> UpdateUser(uint id, UserRegistration user)
-    {
-        User userAlterado = new User
-        {
-            id_user = id,
-            name = user.Name,
-            username = user.Username,
-            email = user.Email,
-            password = user.Password
-        };
-
-        User userNovo = await _userRepository.UpdateUserAsync(id, userAlterado);
-
-        var reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
-
-        return new UserResponseAPI
-        {
-            Id = userNovo.id_user,
-            Name = userNovo.name,
-            Username = userNovo.username,
-            Email = userNovo.email,
-            Password = userNovo.password,
-            Ids_reviews = reviews.Select(r => r.id_review).ToList() ?? Enumerable.Empty<uint>().ToList()
-        };
-    }
-    public async Task<List<UserResponseAPI>> UpdateBatchUser(List<(uint, UserRegistration)> users)
-    {
-        List<(uint, User)> usersAlterados = new List<(uint, User)>();
-
-        foreach (var user in users)
-        {
-            User userAlterado = new User
+            return new UserResponse 
             {
-                id_user = user.Item1,
-                name = user.Item2.Name,
-                username = user.Item2.Username,
-                email = user.Item2.Email,
-                password = user.Item2.Password
-            };
-
-            usersAlterados.Add((user.Item1, userAlterado));
-        }
-
-        List<User> usersNovos = await _userRepository.UpdateBatchUserAsync(usersAlterados);
-
-        List<UserResponseAPI> usersResponsesAPI = new List<UserResponseAPI>();
-
-        foreach (var user in usersNovos)
-        {
-            UserResponseAPI userResponse = new UserResponseAPI
-            {
-                Id = user.id_user,
+                Id = id,
                 Name = user.name,
                 Username = user.username,
                 Email = user.email,
                 Password = user.password,
-                Ids_reviews = user.reviews.Select(r => r.id_review).ToList() ?? Enumerable.Empty<uint>().ToList()
+                Ids_reviews = reviews
+                                .Select(u => u.id_review)
+                                .ToList() 
+                                ?? 
+                                Enumerable.Empty<uint>().ToList()
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    public async Task<UserResponse> GetUserBySession(UserLogin user)
+    {
+        try
+        {
+            User? userAchado = await _userRepository.GetUserBySessionAsync(new User
+            {
+                username = user.Username,
+                email = user.Email,
+                password = user.Password
+            });
+
+            if (userAchado == null)
+            {
+                return new UserResponse();
+            }
+
+            return new UserResponse
+            {
+                Id = userAchado.id_user,
+                Name = userAchado.name,
+                Username = userAchado.username,
+                Email = userAchado.email,
+                Password = userAchado.password
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    public async Task<UserReviewsResponse> GetAllReviewsByUserId(uint id)
+    {
+        try
+        {
+            User user = await _userRepository.GetUserByIdAsync(id);
+
+            if (user == null)
+            {
+                return new UserReviewsResponse
+                {
+                    UserAutor = new User
+                    {
+                        id_user = 0,
+                        name = string.Empty,
+                        username = string.Empty,
+                        email = string.Empty,
+                        password = string.Empty
+                    },
+                    Reviews = Enumerable.Empty<ReviewResponseList>().ToList()
+                };
+            }
+
+            List<Review> reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
+
+            if (reviews.Count == 0)
+            {
+                return new UserReviewsResponse
+                {
+                    UserAutor = user,
+                    Reviews = Enumerable.Empty<ReviewResponseList>().ToList()
+                };
+            }
+
+            // Resposta
+
+            List<ReviewResponseList> reviewsResponses = new List<ReviewResponseList>(reviews.Count);
+
+            foreach (var review in reviews)
+            {
+                reviewsResponses.Add(new ReviewResponseList
+                {
+                    Id = review.id_review,
+                    Movie_Id = review.id_movie_mdb,
+                    Score = review.review,
+                    Comment = review.comment,
+                    Created_at = review.created_at
+                });
+            }
+
+            return new UserReviewsResponse
+            {
+                UserAutor = user,
+                Reviews = reviewsResponses
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    // UPDATE
+    public async Task<UserResponse> UpdateUser(uint id, UserCreation user)
+    {
+        try
+        {
+            User? userExistente = await _userRepository.GetUserByIdAsync(id);
+
+            if (userExistente == null)
+            {
+                return new UserResponse();
+            }
+
+            User userAlterado = new User
+            {
+                id_user = id,
+                name = string.IsNullOrEmpty(user.Name.Trim()) ? userExistente.name : user.Name,
+                username = string.IsNullOrEmpty(user.Username.Trim()) ? userExistente.username : user.Username,
+                email = string.IsNullOrEmpty(user.Email.Trim()) ? userExistente.email : user.Email,
+                password = string.IsNullOrEmpty(user.Password.Trim()) ? userExistente.password : user.Password
             };
 
-            usersResponsesAPI.Add(userResponse);
+            User? userNovo = await _userRepository.UpdateUserAsync(id, userAlterado);
+
+            if (userNovo == null)
+            {
+                return new UserResponse();
+            }
+
+            List<Review> reviews = await _userRepository.GetAllReviewsByUserIdAsync(id);
+
+            return new UserResponse
+            {
+                Id = userNovo.id_user,
+                Name = userNovo.name,
+                Username = userNovo.username,
+                Email = userNovo.email,
+                Password = userNovo.password,
+                Ids_reviews = reviews
+                                .Select(u => u.id_review)
+                                .ToList()
+                                ??
+                                Enumerable.Empty<uint>().ToList()
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    public async Task<List<UserResponse>> UpdateBatchUser(List<(uint, UserCreation)> users)
+    {
+        try
+        {
+            List<(uint, User)> usersAlterados = new List<(uint, User)>();
+
+            foreach (var user in users)
+            {
+                User userAlterado = new User
+                {
+                    id_user = user.Item1,
+                    name = user.Item2.Name,
+                    username = user.Item2.Username,
+                    email = user.Item2.Email,
+                    password = user.Item2.Password
+                };
+
+                usersAlterados.Add((user.Item1, userAlterado));
+            }
+
+            List<User> usersNovos = await _userRepository.UpdateBatchUserAsync(usersAlterados);
+
+            List<UserResponse> usersResponses = new List<UserResponse>();
+
+            foreach (var user in usersNovos)
+            {
+                UserResponse userResponse = new UserResponse
+                {
+                    Id = user.id_user,
+                    Name = user.name,
+                    Username = user.username,
+                    Email = user.email,
+                    Password = user.password,
+                    Ids_reviews = user.reviews
+                                        .Select(r => r.id_review)
+                                        .ToList() 
+                                        ?? 
+                                        Enumerable.Empty<uint>().ToList()
+                };
+
+                usersResponses.Add(userResponse);
+            }
+
+            return usersResponses;
+        }
+        catch (Exception)
+        {
+            throw;
         }
 
-        return usersResponsesAPI;
     }
     
     // DELETE

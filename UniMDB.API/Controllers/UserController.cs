@@ -20,18 +20,19 @@ public class UserController : ControllerBase
 
     // CREATE
     [HttpPost("add"), Produces("application/json")]
-    public async Task<ActionResult<UserResponseAPI>> AddUser(UserRegistration user)
+    public async Task<ActionResult<UserResponse>> AddUser(UserCreation user)
     {
         try
         {
-            var userNovo = await _userService.AddUser(user);
+            UserResponse userNovo = await _userService.AddUser(user);
 
-            if (userNovo != null)
+            if (userNovo.Id == 0)
             {
-                return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
+                return BadRequest(user);
             }
 
-            return BadRequest(user);
+            return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
+
         }
         catch (Exception ex)
         {
@@ -41,15 +42,58 @@ public class UserController : ControllerBase
     
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserResponseAPI>> GetUser(uint id)
+    public async Task<ActionResult<UserResponse>> GetUser(uint id)
     {
         try
         {
-            var user = await _userService.GetUserById(id);
+            UserResponse user = await _userService.GetUserById(id);
+
+            if (user.Id == 0)
+            {
+                user.Id = id;
+                return NotFound(user);
+            }
+
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("getreviews/{id}"), Produces("application/json")]
+    public async Task<ActionResult<UserReviewsResponse>> GetUserReviews(uint id)
+    {
+        try
+        {
+            UserReviewsResponse reviews = await _userService.GetAllReviewsByUserId(id);
+
+            if (reviews.UserAutor.id_user == 0)
+            {
+                NotFound(reviews);
+            }
+
+            return Ok(reviews);
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    /*
+    [HttpGet("getbyreview/{id}")]
+    public async Task<ActionResult<User>> GetUserByReview(uint id_review)
+    {
+
+        try
+        { 
+            var user = await _userService.GetUserByReview(id_review);
 
             if (user == null)
             {
-                return NotFound($"ID {id} não foi encontrado");
+                return NotFound($"Usuário não foi encontrado");
             }
 
             return Ok(user);
@@ -60,47 +104,22 @@ public class UserController : ControllerBase
         }
 
     }
-
-    /*
-            [HttpGet("getbyreview/{id}")]
-            public async Task<ActionResult<User>> GetUserByReview(uint id_review)
-            {
-
-                try
-                { 
-                    var user = await _userService.GetUserByReview(id_review);
-
-                    if (user == null)
-                    {
-                        return NotFound($"Usuário não foi encontrado");
-                    }
-
-                    return Ok(user);
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, ex.Message);
-                }
-
-            }
     */
-    
-    // UPDATE
-    [HttpPut("update/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> UpdateUser(uint id, UserRegistration userNovo)
-    {
 
+    // UPDATE
+    [HttpPut("update/{id}"), Produces("application/json")]
+    public async Task<ActionResult<UserResponse>> UpdateUser(uint id, UserCreation userNovo)
+    {
         try
         {
+            UserResponse userAtualizado = await _userService.UpdateUser(id, userNovo);
 
-            var userAtualizado = await _userService.UpdateUser(id, userNovo);
-
-            if (userAtualizado.GetType() == typeof(UserResponseAPI))
+            if (userAtualizado.Id == 0)
             {
-                return Ok(userAtualizado);
+                return BadRequest(userNovo);
             }
 
-            return BadRequest(userNovo);
+            return Ok(userAtualizado);
         }
         catch (Exception ex)
         {
@@ -112,22 +131,20 @@ public class UserController : ControllerBase
     [HttpDelete("delete/{id}")]
     public async Task<ActionResult<bool>> DeleteUser(uint id)
     {
-
         try
         {
-            var userDeletado = await _userService.DeleteUser(id);
+            bool userDeletado = await _userService.DeleteUser(id);
 
-            if (userDeletado.GetType() == typeof(bool))
+            if (userDeletado)
             {
                 return Ok(userDeletado);
             }
 
-            return BadRequest($"Não foi possível delete o ID ( {id} )");
+            return BadRequest(userDeletado);
         }
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
         }
-
     }
 }

@@ -6,10 +6,6 @@ using UniMDB.Infrastructure.Repositories;
 
 namespace UniMDB.Application.Services;
 
-//  Aqui vai ficar todas as implementações que envolvam o banco de dados e os usuários
-
-//  TODO: Fazer as implementações   xD
-
 public class ReviewService : IReviewService
 {
     private readonly IReviewRepository _reviewRepository;
@@ -19,36 +15,11 @@ public class ReviewService : IReviewService
     }
 
     // CREATE
-    public async Task<ReviewResponseAPI> AddReview(ReviewCreation review)
+    public async Task<ReviewResponse> AddReview(ReviewCreation review)
     {
-        Review reviewAdicionar = new Review
+        try
         {
-            id_review = 0,
-            id_review_user = review.Id_User,
-            id_movie_mdb = review.Id_Movie,
-            review = review.Score,
-            comment = review.Comment,
-            created_at = DateTime.Now
-        };
-
-        Review reviewNova = await _reviewRepository.AddReviewAsync(reviewAdicionar);
-
-        return new ReviewResponseAPI
-        {
-            Id = reviewNova.id_review,
-            Score = reviewAdicionar.review,
-            Comment = reviewAdicionar.comment,
-            Created_at = reviewAdicionar.created_at,
-            User = reviewNova.user
-        };
-    }
-    public async Task<List<ReviewResponseAPI>> AddBatchReview(List<ReviewCreation> reviews)
-    {
-        List<Review> batchReviews = new List<Review>();
-
-        foreach (var review in reviews)
-        {
-            batchReviews.Add(new Review
+            Review reviewAdicionar = new Review
             {
                 id_review = 0,
                 id_review_user = review.Id_User,
@@ -56,99 +27,113 @@ public class ReviewService : IReviewService
                 review = review.Score,
                 comment = review.Comment,
                 created_at = DateTime.Now
-            });
-        }
-
-        List<Review> reviewsAdicionadass = await _reviewRepository.AddBatchReviewAsync(batchReviews);
-
-        List<ReviewResponseAPI> reviewResponseAPIs = new List<ReviewResponseAPI>();
-
-        foreach (var review in reviewsAdicionadass)
-        {
-            ReviewResponseAPI reviewAdicionada = new ReviewResponseAPI
-            {
-                Id = review.id_review,
-                Score = review.review,
-                Comment = review.comment,
-                Created_at = review.created_at,
-                User = review.user
             };
 
-            reviewResponseAPIs.Add(reviewAdicionada);
-        }
+            Review reviewNova = await _reviewRepository.AddReviewAsync(reviewAdicionar);
 
-        return reviewResponseAPIs;
+            return new ReviewResponse
+            {
+                Id = reviewNova.id_review,
+                User_Id = reviewAdicionar.id_review_user,
+                Movie_Id = reviewAdicionar.id_movie_mdb,
+                Score = reviewAdicionar.review,
+                Comment = reviewAdicionar.comment,
+                Created_at = reviewAdicionar.created_at
+            };
+        }
+        catch
+        {
+            throw;
+        }
     }
     
-    // READ
-    public async Task<ReviewResponseAPI> GetReviewById(uint id_review)
+    public async Task<List<ReviewResponse>> AddBatchReview(List<ReviewCreation> reviews)
     {
-        var review = await _reviewRepository.GetReviewByIdAsync(id_review);
-
-        if (review == null)
+        try
         {
-            return null;
-        }
-
-        return new ReviewResponseAPI
-        {
-            Id = review.id_review,
-            Score = review.review,
-            Comment = review.comment,
-            Created_at = review.created_at,
-            User = review.user
-        };
-    }   
-
-    
-    // FIX: Arrumar o retorno de User da ReviewResponse
-    public async Task<List<ReviewResponseAPI>> GetAllReviewsByUserId(uint id)
-        {
-            List<Review> reviews = await _reviewRepository.GetAllReviewsByUserIdAsync(id);
-
-            var x = reviews.First().user;
-
-
-            List<ReviewResponseAPI> reviewsResponsesAPI = new List<ReviewResponseAPI>(reviews.Count);
+            List<Review> batchReviews = new List<Review>();
 
             foreach (var review in reviews)
             {
-                ReviewResponseAPI reviewResponse = new ReviewResponseAPI
+                batchReviews.Add(new Review
                 {
-                    Id = review.id_review,
-                    Score = review.review,
-                    Comment = review.comment,
-                    Created_at = review.created_at,
-                    User = x
-                };
-
-                reviewsResponsesAPI.Add(reviewResponse);
+                    id_review = 0,
+                    id_review_user = review.Id_User,
+                    id_movie_mdb = review.Id_Movie,
+                    review = review.Score,
+                    comment = review.Comment,
+                    created_at = DateTime.Now
+                });
             }
 
-            return reviewsResponsesAPI;
+            List<Review> reviewsAdicionadass = await _reviewRepository.AddBatchReviewAsync(batchReviews);
+
+            // Resposta
+
+            List<ReviewResponse> reviewsResponses = new List<ReviewResponse>();
+
+            foreach (var review in reviewsAdicionadass)
+            {
+                reviewsResponses.Add(new ReviewResponse
+                { 
+                    Id = review.id_review,
+                    User_Id = review.id_review_user,
+                    Movie_Id = review.id_movie_mdb,
+                    Score = review.review,
+                    Comment = review.comment,
+                    Created_at = review.created_at
+                });
+            }
+
+            return reviewsResponses;
         }
+        catch 
+        {
+            throw;
+        }
+    }
+    
+    // READ
+    public async Task<ReviewResponse> GetReviewById(uint id_review)
+    {
+        Review? review = await _reviewRepository.GetReviewByIdAsync(id_review);
+
+        if (review == null)
+        {
+            return new ReviewResponse();
+        }
+
+        return new ReviewResponse
+        {
+            Id = review.id_review,
+            User_Id = review.id_review_user,
+            Movie_Id = review.id_movie_mdb,
+            Score = review.review,
+            Comment = review.comment,
+            Created_at = review.created_at
+        };
+    }   
     
     // UPDATE
-    public async Task<ReviewResponseAPI> UpdateReview(uint id_review, ReviewCreation review)
+    public async Task<ReviewResponse> UpdateReview(uint id_review, ReviewUpdate review)
     {
+
         Review reviewAlterada = new Review
         {
-            id_review = id_review,
-            id_review_user = review.Id_User,
-            id_movie_mdb = review.Id_Movie,
             review = review.Score,
             comment = review.Comment
         };
 
         Review reviewNova = await _reviewRepository.UpdateReviewAsync(id_review, reviewAlterada);
 
-        return new ReviewResponseAPI
+        return new ReviewResponse
         {
             Id = id_review,
+            User_Id = reviewNova.id_review_user,
+            Movie_Id = reviewNova.id_movie_mdb,
             Score = reviewNova.review,
             Comment = reviewNova.comment,
-            Created_at = reviewNova.created_at,
-            User = reviewNova.user
+            Created_at = reviewNova.created_at
         };
     }
     

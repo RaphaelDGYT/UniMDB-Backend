@@ -23,8 +23,6 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    //  Obtem a string de conexão pelas variaveis de ambiente do Railway, caso não conseguir, usa 
-    //  o 'user-secrets' para procurar a variável. Isso é útil especialmente para quando não estivermos em produção
     var Env_Var = builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
 
     string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? Env_Var["ConnectionString"];
@@ -35,9 +33,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), opt =>
-    {
-        opt.MigrationsAssembly("UniMDB.API");
-    });
+        opt.MigrationsAssembly("UniMDB.API")
+    );
 });
 
 var app = builder.Build();
@@ -50,7 +47,7 @@ using (var scope = app.Services.CreateAsyncScope())
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         if (!db.Database.CanConnect())
-            throw new Exception("\n\nErro: Não foi possível conectar no Banco de Dados\n\n");
+            throw new Exception("\n\nErro: Nï¿½o foi possï¿½vel conectar no Banco de Dados\n\n");
     }
     catch (Exception)
     {
@@ -76,7 +73,7 @@ else
 
         if (qntd_users_fakes > 0)
         {
-            List<UserRegistration> usuarios = new List<UserRegistration>();
+            List<UserCreation> usuarios = new List<UserCreation>();
 
             for (int i = 0; i < qntd_users_fakes; i++)
             {

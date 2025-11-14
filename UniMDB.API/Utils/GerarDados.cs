@@ -7,9 +7,9 @@ namespace UniMDB.API.Utils;
 
 public static class GerarDados
 {
-    public static UserRegistration GerarUser()
+    public static UserCreation GerarUser()
     {
-        var faker = new Faker<UserRegistration>("pt_BR")
+        var faker = new Faker<UserCreation>("pt_BR")
             .RuleFor(u => u.Name, f => f.Person.FullName)
             .RuleFor(u => u.Username, f => f.Internet.UserName(f.Person.FirstName, f.Person.LastName))
             .RuleFor(u => u.Email, f => f.Person.Email)

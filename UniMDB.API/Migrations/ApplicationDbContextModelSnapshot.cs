@@ -26,15 +26,17 @@ namespace UniMDB.API.Migrations
                         .HasColumnType("int unsigned");
 
                     b.Property<string>("comment")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<DateTime>("created_at")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("id_movie_mdb")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasMaxLength(9)
+                        .HasColumnType("char(9)")
+                        .IsFixedLength();
 
                     b.Property<uint>("id_review_user")
                         .HasColumnType("int unsigned");
@@ -56,24 +58,35 @@ namespace UniMDB.API.Migrations
                         .HasColumnType("int unsigned");
 
                     b.Property<string>("email")
+                        .IsConcurrencyToken()
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("password")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("username")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("id_user");
 
-                    b.ToTable("Users");
+                    b.HasIndex("email")
+                        .IsUnique();
+
+                    b.HasIndex("username")
+                        .IsUnique();
+
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("UniMDB.Domain.Entities.Review", b =>

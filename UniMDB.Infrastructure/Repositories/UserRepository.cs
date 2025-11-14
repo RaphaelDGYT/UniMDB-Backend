@@ -18,20 +18,20 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            _context.Users.Add(user);
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
         }
-        catch (Exception)
+        catch 
         {
-            throw;
+            throw new Exception("Erro ao adicionar usuário");
         }
     }
     public async Task<List<User>> AddBatchUserAsync(List<User> users)
     {
         try
         {
-            _context.Users.AddRange(users);
+            await _context.Users.AddRangeAsync(users);
             await _context.SaveChangesAsync();
             return users;
         }
@@ -51,11 +51,11 @@ public class UserRepository : IUserRepository
                         ??
                         Enumerable.Empty<uint>().ToList();
     }
-    public async Task<User> GetUserByIdAsync(uint id)
+    public async Task<User?> GetUserByIdAsync(uint id)
     {
         return await _context.Users.FindAsync(id);
     }
-    public Task<User> GetUserBySessionAsync(User userSession)
+    public Task<User?> GetUserBySessionAsync(User userSession)
     {
 
         try
@@ -79,38 +79,47 @@ public class UserRepository : IUserRepository
         try
         {
             return await _context.Reviews
-                            .AsNoTracking()
-                            .Where(r => r.id_review_user == id)
-                            .ToListAsync()
-                            ??
-                            Enumerable.Empty<Review>().ToList();
+                                    .AsNoTracking()
+                                    .Where(r => r.id_review_user == id)
+                                    .ToListAsync()
+                                    ??
+                                    Enumerable.Empty<Review>().ToList();
+
         }
         catch (Exception)
         {
-            throw; 
+            throw;
         }
     }
     
     // UPDATE
-    public async Task<User> UpdateUserAsync(uint id, User userNovo)
+    public async Task<User?> UpdateUserAsync(uint id, User userNovo)
     {
         try
         {
-            var userAchado = await _context.Users.FindAsync(id);
+            User? userAchado = await GetUserByIdAsync(id);
 
             if (userAchado == null)
             {
                 return null;
             }
 
+            int colunas_alteradas = await _context.Users
+                                            .Where(u => u.id_user == id)
+                                            .ExecuteUpdateAsync(update =>
+
+                                                update
+                                                    .SetProperty(u => u.name, userNovo.name)
+                                                    .SetProperty(u => u.username, userNovo.username)
+                                                    .SetProperty(u => u.email, userNovo.email)
+                                                    .SetProperty(u => u.password, userNovo.password)
+
+                                            );
+
             userNovo.id_user = userAchado.id_user;
-            userAchado.name = userNovo.name;
-            userAchado.username = userNovo.username;
-            userAchado.email = userNovo.email;
-            userAchado.password = userNovo.password;
 
             await _context.SaveChangesAsync();
-            return userAchado;
+            return userNovo;
         }
         catch (Exception)
         {
@@ -121,48 +130,65 @@ public class UserRepository : IUserRepository
     {
         try
         {
-
-            List<User> usersAlterados = new List<User>(users.Count);
-
-            foreach (var user in users)
+            if (users.Count == 0)
             {
-                var userAchado = await GetUserByIdAsync(user.Item1);
+                return Enumerable.Empty<User>().ToList();
+            }
+
+            List<User> usersAtualizados = new List<User>(users.Count);
+
+            foreach (var item in users)
+            {
+                User userNovo = item.Item2;
+                uint userNovoID = item.Item1;
+
+                User? userAchado = await GetUserByIdAsync(userNovoID);
 
                 if (userAchado == null)
                 {
                     continue;
                 }
 
-                user.Item2.id_user = userAchado.id_user;
-                userAchado.name = user.Item2.name;
-                userAchado.username = user.Item2.username;
-                userAchado.email = user.Item2.email;
-                userAchado.password = user.Item2.password;
+                int colunas_alteradas = await _context.Users
+                                                .Where(u => u.id_user == userNovoID)
+                                                .ExecuteUpdateAsync(update =>
 
-                usersAlterados.Add(userAchado);
+                                                    update
+                                                        .SetProperty(u => u.name, userNovo.name)
+                                                        .SetProperty(u => u.username, userNovo.username)
+                                                        .SetProperty(u => u.email, userNovo.email)
+                                                        .SetProperty(u => u.password, userNovo.password)
+
+                                                );
+
+                userNovo.id_user = userAchado.id_user;
+
+                usersAtualizados.Add(item.Item2);
             }
 
             await _context.SaveChangesAsync();
-            return usersAlterados;
+            return usersAtualizados;
         }
         catch (Exception)
         {
             throw;
         }
-    }
 
+    }
     // DELETE
     public async Task<bool> DeleteUserAsync(uint id)
     {
-
         try
         {
-            var user = await _context.Users.FindAsync(id);
+            int colunas_deletadas = await _context.Users
+                                            .Where(u => u.id_user == id)
+                                            .ExecuteDeleteAsync();
 
-            if (user == null)
+            if (colunas_deletadas < 1)
+            {
                 return false;
+            }
 
-            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -170,6 +196,5 @@ public class UserRepository : IUserRepository
         {
             throw;
         }
-        
     }
 }

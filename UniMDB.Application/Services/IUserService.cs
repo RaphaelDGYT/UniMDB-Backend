@@ -6,21 +6,21 @@ namespace UniMDB.Application.Services;
 public interface IUserService
 {
     // CREATE
-    Task<UserResponseAPI> AddUser(UserRegistration user);
-    Task<List<UserResponseAPI>> AddBatchUser(List<UserRegistration> users);
+    Task<UserResponse> AddUser(UserCreation user);
+    Task<List<UserResponse>> AddBatchUser(List<UserCreation> users);
 
     // READ
     Task<List<uint>> GetAllUserIds();
-    Task<UserResponseAPI> GetUserById(uint id);
-    Task<UserResponseAPI> GetUserBySession(UserLogin user);
-    Task<List<ReviewResponseAPI>> GetAllReviewsByUserId(uint id);
+    Task<UserResponse> GetUserById(uint id);
+    Task<UserResponse> GetUserBySession(UserLogin user);
+    Task<UserReviewsResponse> GetAllReviewsByUserId(uint id);
 
     //Task<User> GetUserByReview(uint reviewId);
 
 
     // UPDATE
-    Task<UserResponseAPI> UpdateUser(uint id, UserRegistration userNovo);
-    Task<List<UserResponseAPI>> UpdateBatchUser(List<(uint, UserRegistration)> usersNovos);
+    Task<UserResponse> UpdateUser(uint id, UserCreation userNovo);
+    Task<List<UserResponse>> UpdateBatchUser(List<(uint, UserCreation)> usersNovos);
 
     // DELETE
     Task<bool> DeleteUser(uint id);

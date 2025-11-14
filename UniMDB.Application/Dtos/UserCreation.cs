@@ -2,7 +2,7 @@
 
 //  DTO começam com maiuscula
 
-public class UserRegistration
+public class UserCreation
 {
     public string Name { get; set; } = String.Empty;
     public string Username { get; set; } = String.Empty;

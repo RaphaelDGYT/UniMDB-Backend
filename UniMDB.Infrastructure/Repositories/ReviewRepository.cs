@@ -12,14 +12,17 @@ public class ReviewRepository : IReviewRepository
     {
         _context = context;
     }
-
+    
     // CREATE
     public async Task<Review> AddReviewAsync(Review review)
     {
         try
         {
-            _context.Reviews.Add(review);
+            await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
+
+            review.user = await _context.Users.FindAsync(review.id_review_user);
+
             return review;
         }
         catch (Exception)
@@ -31,8 +34,14 @@ public class ReviewRepository : IReviewRepository
     {
         try
         {
-            _context.Reviews.AddRange(reviews);
+            await _context.Reviews.AddRangeAsync(reviews);
             await _context.SaveChangesAsync();
+
+            foreach (var review in reviews)
+            {
+                review.user = await _context.Users.FindAsync(review.id_review_user);
+            }
+
             return reviews;
         }
         catch (Exception)
@@ -42,45 +51,66 @@ public class ReviewRepository : IReviewRepository
     }
     
     // READ
-    public async Task<Review> GetReviewByIdAsync(uint id)
+    public async Task<Review?> GetReviewByIdAsync(uint id)
     {
-        return await _context.Reviews.FindAsync(id);
+        Review? review = await _context.Reviews.FindAsync(id);
+
+        if (review == null)
+        {
+            return null;
+        }
+
+        review.user = await _context.Users.FindAsync(review.id_review_user);
+
+        return review;
     }
 
+    /*
     public async Task<List<Review>> GetAllReviewsByUserIdAsync(uint id_user)
     {
         try
         {
             return await _context.Reviews
-                            .AsNoTracking()
-                            .Where(r => r.id_review_user == id_user)
-                            .ToListAsync()
-                            ??
-                            Enumerable.Empty<Review>().ToList();
+                                    .AsNoTracking()
+                                    .Where(r => r.id_review_user == id_user)
+                                    .ToListAsync()
+                                    ??
+                                    Enumerable.Empty<Review>().ToList();
         }
         catch (Exception)
         {
             throw;
         }
     }
-    
+    */
+
     // UPDATE
-    public async Task<Review> UpdateReviewAsync(uint id, Review reviewNova)
+    public async Task<Review?> UpdateReviewAsync(uint id, Review reviewNova)
     {
         try
         {
-            var reviewAchada = await _context.Reviews.FindAsync(id);
+            Review? reviewAchada = await GetReviewByIdAsync(id);
 
             if (reviewAchada == null)
             {
                 return null;
             }
 
+            int colunas_alteradas = await _context.Reviews
+                                            .Where(r => r.id_review == id)
+                                            .ExecuteUpdateAsync(update =>
+
+                                                update
+                                                    .SetProperty(r => r.review, reviewNova.review)
+                                                    .SetProperty(r => r.comment, reviewNova.comment)
+
+                                            );
+
             reviewNova.id_review = reviewAchada.id_review;
             reviewNova.id_review_user = reviewAchada.id_review_user;
-            reviewAchada.review = reviewNova.review;
-            reviewAchada.comment = reviewNova.comment;
-            reviewAchada.created_at = reviewNova.created_at;
+            reviewNova.user = reviewAchada.user;
+            reviewNova.id_movie_mdb = reviewAchada.id_movie_mdb;
+            reviewNova.created_at = reviewAchada.created_at;
 
             await _context.SaveChangesAsync();
             return reviewNova;
@@ -96,12 +126,15 @@ public class ReviewRepository : IReviewRepository
     {
         try
         {
-            var review = await _context.Reviews.FindAsync(id);
+            int colunas_deletadas = await _context.Reviews
+                                            .Where(r => r.id_review == id)
+                                            .ExecuteDeleteAsync();
 
-            if (review == null)
+            if (colunas_deletadas < 1)
+            {
                 return false;
+            }
 
-            _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
             return true;
         }

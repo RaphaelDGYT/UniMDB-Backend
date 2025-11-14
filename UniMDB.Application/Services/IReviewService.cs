@@ -6,15 +6,14 @@ namespace UniMDB.Application.Services;
 public interface IReviewService
 {
     // CREATE
-    Task<ReviewResponseAPI> AddReview(ReviewCreation review);
-    Task<List<ReviewResponseAPI>> AddBatchReview(List<ReviewCreation> reviews);
+    Task<ReviewResponse> AddReview(ReviewCreation review);
+    Task<List<ReviewResponse>> AddBatchReview(List<ReviewCreation> reviews);
 
     // READ
-    Task<ReviewResponseAPI> GetReviewById(uint id_review);
-    Task<List<ReviewResponseAPI>> GetAllReviewsByUserId(uint id);
+    Task<ReviewResponse> GetReviewById(uint id_review);
 
     // UPDATE
-    Task<ReviewResponseAPI> UpdateReview(uint id_review, ReviewCreation review);
+    Task<ReviewResponse> UpdateReview(uint id_review, ReviewUpdate review);
     
     // DELETE
     Task<bool> DeleteReview(uint id_review);

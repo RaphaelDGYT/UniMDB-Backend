@@ -18,7 +18,9 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 
         builder
             .Property(r => r.id_movie_mdb)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(9)
+            .IsFixedLength();
 
         builder
             .Property(r => r.review)
@@ -26,7 +28,8 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 
         builder
             .Property(r => r.comment)
-            .IsRequired(false);
+            .IsRequired(false)
+            .HasMaxLength(500);
 
         builder
             .Property(r => r.created_at)
