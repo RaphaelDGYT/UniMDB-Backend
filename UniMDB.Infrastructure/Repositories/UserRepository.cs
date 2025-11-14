@@ -5,6 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UniMDB.Infrastructure.Repositories;
 
+/*
+
+    Explicacao:
+        
+        Classe responsavel por criar as funcoes que mexem de fato com o Banco de Dados, nesse caso envolvendo
+        a classe 'User'
+ 
+*/
+
 public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _context;
@@ -18,6 +27,15 @@ public class UserRepository : IUserRepository
     {
         try
         {
+            /*
+                
+                Lógica:
+
+                    Espera até o Banco de Dados adicionar o parâmetro 'user', se der algum erro será enviada 
+                    uma Exception
+             
+            */
+
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
@@ -31,6 +49,15 @@ public class UserRepository : IUserRepository
     {
         try
         {
+            /*
+
+                Lógica:
+
+                    Espera até o Banco de Dados adicionar todos os usuários  dentro do parâmetro 'users', 
+                    se der algum erro será enviada uma Exception
+
+            */
+
             await _context.Users.AddRangeAsync(users);
             await _context.SaveChangesAsync();
             return users;
@@ -44,6 +71,23 @@ public class UserRepository : IUserRepository
     // READ
     public async Task<List<uint>> GetAllUserIdsAsync()
     {
+        /*
+
+            Lógica:
+
+                Primeiro ele "lê" a tabela 'Users' como uma Query não Trackeavel, ou seja, uma Query que não fará
+                mudanças dentro da tabela, somente leitura.
+
+                Segundo ele seleciona e retorna todos os IDs dos usuários
+
+                Terceiro ele converte para uma lista assincrona, ou seja, o programa esperará até que tudo
+                tenha sido feito para enviar a Lista dos IDs
+
+            
+                Caso retorne nulo, ele retornará uma lista vázia de IDs
+
+        */
+
         return await _context.Users
                         .AsNoTracking()
                         .Select(u => u.id_user)
@@ -53,13 +97,35 @@ public class UserRepository : IUserRepository
     }
     public async Task<User?> GetUserByIdAsync(uint id)
     {
+        /*
+
+            Lógica:
+
+                Espera até o Banco de Dados achar um usuário com o mesmo id do parâmetro, caso ele não ache
+                retornará um valor nulo
+
+        */
+
         return await _context.Users.FindAsync(id);
     }
     public Task<User?> GetUserBySessionAsync(User userSession)
     {
-
         try
         {
+            /*
+
+                Lógica:
+
+                    Primeiro ele "lê" a tabela 'Users' como uma Query não Trackeavel, ou seja, 
+                    uma Query que não fará mudanças dentro da tabela, somente leitura.
+
+                    Segundo ele retorna o primeiro usuário que ele achar com os mesmos
+                    username, senha e e-mail do parâmetro 'userSession'. 
+
+                    Caso não ache, ele retorna um valor nulo.
+
+            */
+
             return _context.Users
                         .AsNoTracking()
                         .FirstOrDefaultAsync(u =>
@@ -78,6 +144,23 @@ public class UserRepository : IUserRepository
     {
         try
         {
+            /*
+
+                Lógica:
+
+                    Primeiro ele "lê" a tabela 'Reviews' como uma Query não Trackeavel, ou seja, 
+                    uma Query que não fará mudanças dentro da tabela, somente leitura.
+
+                    Segundo ele retorna todas as reviews com o mesmo id passado no parâmetro
+
+                    Terceiro ele converte para uma lista assincrona, ou seja, o programa esperará até que tudo
+                    tenha sido feito para enviar a Lista de Reviews
+
+
+                    Caso retorne nulo, ele retornará uma lista vázia de IDs
+
+            */
+
             return await _context.Reviews
                                     .AsNoTracking()
                                     .Where(r => r.id_review_user == id)
@@ -97,6 +180,23 @@ public class UserRepository : IUserRepository
     {
         try
         {
+            /*
+
+                Lógica:
+
+                    Primeiro ele verifica se o usuário com esse ID passado no parâmetro existe.
+                    Caso não, ele retornará nulo
+
+                    Segundo ele procura por todos os usuários com esse mesmo ID 
+
+                    Terceiro ele executa um Update que muda o nome, username, e-mail e senha para 
+                    os passados no parâmetro 'userNovo'
+
+                    Por fim, retorna o mesmo 'userNovo' passado, só que alterado o ID para o usuário
+                    que foi alterado só para ter certeza que ele está com ID certo
+
+            */
+
             User? userAchado = await GetUserByIdAsync(id);
 
             if (userAchado == null)
@@ -175,6 +275,7 @@ public class UserRepository : IUserRepository
         }
 
     }
+    
     // DELETE
     public async Task<bool> DeleteUserAsync(uint id)
     {

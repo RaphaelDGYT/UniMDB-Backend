@@ -2,6 +2,14 @@
 
 namespace UniMDB.Domain.Interfaces;
 
+/*
+
+    Explicacao:
+        
+        Classe responsavel por criar os contratos para serem cumpridos na 'RevieRepository', forçando 
+        a implementacao de cada funcao aqui presente
+ 
+*/
 public interface IReviewRepository
 {
     // CREATE

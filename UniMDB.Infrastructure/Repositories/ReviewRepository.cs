@@ -5,6 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UniMDB.Infrastructure.Repositories;
 
+/*
+
+    Explicacao:
+        
+        Classe responsavel por criar as funcoes que mexem de fato com o Banco de Dados, nesse caso envolvendo
+        a classe 'Review'
+
+*/
+
 public class ReviewRepository : IReviewRepository
 {
     private readonly ApplicationDbContext _context;
@@ -84,8 +93,8 @@ public class ReviewRepository : IReviewRepository
     }
     */
 
-    // UPDATE
-    public async Task<Review?> UpdateReviewAsync(uint id, Review reviewNova)
+// UPDATE
+public async Task<Review?> UpdateReviewAsync(uint id, Review reviewNova)
     {
         try
         {

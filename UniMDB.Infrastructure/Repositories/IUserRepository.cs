@@ -2,6 +2,15 @@
 
 namespace UniMDB.Domain.Interfaces;
 
+/*
+
+    Explicacao:
+        
+        Classe responsavel por criar os contratos para serem cumpridos na 'UserRepository', forçando 
+        a implementacao de cada funcao aqui presente
+ 
+*/
+
 public interface IUserRepository
 {
     // CREATE
