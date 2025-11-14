@@ -39,7 +39,26 @@ public class UserController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
-    
+    [HttpPost("login"), Produces("application/json")]
+    public async Task<ActionResult<UserResponse>> Login([FromBody]UserLogin user)
+    {
+        try
+        {
+            UserResponse userNovo = await _userService.Login(user);
+
+            if (userNovo.Id == 0)
+            {
+                return BadRequest(user);
+            }
+
+            return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
+
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
     public async Task<ActionResult<UserResponse>> GetUser(uint id)

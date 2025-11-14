@@ -44,6 +44,35 @@ public class UserService : IUserService
             throw;
         }
     }
+    public async Task<UserResponse> Login(UserLogin user)
+    {
+         try
+        {
+            User userAchado = await _userRepository.Login(new User
+            {
+                email = user.Email,
+                password = user.Password
+            });
+
+            if (userAchado == null)
+            {
+                return new UserResponse();
+            }
+
+            return new UserResponse
+            {
+                Id = userAchado.id_user,
+                Name = userAchado.name,
+                Username = userAchado.username,
+                Email = userAchado.email,
+                Password = userAchado.password
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
     public async Task<List<UserResponse>> AddBatchUser(List<UserCreation> users)
     {
         try
@@ -126,36 +155,36 @@ public class UserService : IUserService
             throw;
         }
     }
-    public async Task<UserResponse> GetUserBySession(UserLogin user)
-    {
-        try
-        {
-            User? userAchado = await _userRepository.GetUserBySessionAsync(new User
-            {
-                username = user.Username,
-                email = user.Email,
-                password = user.Password
-            });
+    // public async Task<UserResponse> GetUserBySession(UserLogin user)
+    // {
+    //     try
+    //     {
+    //         User? userAchado = await _userRepository.GetUserBySessionAsync(new User
+    //         {
+    //             username = user.Username,
+    //             email = user.Email,
+    //             password = user.Password
+    //         });
 
-            if (userAchado == null)
-            {
-                return new UserResponse();
-            }
+    //         if (userAchado == null)
+    //         {
+    //             return new UserResponse();
+    //         }
 
-            return new UserResponse
-            {
-                Id = userAchado.id_user,
-                Name = userAchado.name,
-                Username = userAchado.username,
-                Email = userAchado.email,
-                Password = userAchado.password
-            };
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-    }
+    //         return new UserResponse
+    //         {
+    //             Id = userAchado.id_user,
+    //             Name = userAchado.name,
+    //             Username = userAchado.username,
+    //             Email = userAchado.email,
+    //             Password = userAchado.password
+    //         };
+    //     }
+    //     catch (Exception)
+    //     {
+    //         throw;
+    //     }
+    // }
     public async Task<UserReviewsResponse> GetAllReviewsByUserId(uint id)
     {
         try

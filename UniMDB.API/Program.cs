@@ -20,7 +20,16 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var Env_Var = builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
@@ -103,7 +112,7 @@ else
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseCors("AllowAll");
 //app.UseHttpsRedirection();
 
 app.UseAuthorization();

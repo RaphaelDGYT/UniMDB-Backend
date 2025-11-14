@@ -16,12 +16,14 @@ public interface IUserRepository
     // CREATE
     Task<User> AddUserAsync(User user);
     Task<List<User>> AddBatchUserAsync(List<User> users);
+    Task<User?> Login(User user);
 
     // READ
     Task<List<uint>> GetAllUserIdsAsync();
     Task<User?> GetUserByIdAsync(uint id);
     Task<User?> GetUserBySessionAsync(User user);
     Task<List<Review>> GetAllReviewsByUserIdAsync(uint id);
+
 
     //Task<User> GetUserByReview(uint reviewId);
 

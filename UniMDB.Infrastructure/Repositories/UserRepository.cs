@@ -68,6 +68,17 @@ public class UserRepository : IUserRepository
         }
     }
 
+    public Task<User?> Login(User UserLogin)
+    {
+        return _context.Users
+        .AsNoTracking()
+        .FirstOrDefaultAsync(u =>
+        u.password == UserLogin.password &&
+        u.email == UserLogin.email
+        );
+
+    }
+
     // READ
     public async Task<List<uint>> GetAllUserIdsAsync()
     {
