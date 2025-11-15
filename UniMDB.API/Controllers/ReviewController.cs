@@ -19,7 +19,7 @@ public class ReviewController : ControllerBase
 
     // CREATE
     [HttpPost("add"), Produces("application/json")]
-    public async Task<ActionResult<ReviewResponse>> AddReview(ReviewCreation review)
+    public async Task<ActionResult<ReviewResponse>> AddReview([FromQuerry]ReviewCreation review)
     {
         try
         {
@@ -40,7 +40,7 @@ public class ReviewController : ControllerBase
 
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
-    public async Task<ActionResult<ReviewResponse>> GetReview(uint id)
+    public async Task<ActionResult<ReviewResponse>> GetReview([FromQuerry]uint id)
     {
         try
         {
@@ -85,7 +85,7 @@ public class ReviewController : ControllerBase
 
     // UPDATE
     [HttpPut("update/{id}"), Produces("application/json")]
-    public async Task<ActionResult<ReviewResponse>> UpdateReview(uint id, ReviewUpdate reviewNova)
+    public async Task<ActionResult<ReviewResponse>> UpdateReview([FromQuerry]uint id, ReviewUpdate reviewNova)
     {
         try
         {

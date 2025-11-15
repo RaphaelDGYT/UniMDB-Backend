@@ -44,11 +44,13 @@ public class UserService : IUserService
             throw;
         }
     }
-    public async Task<UserResponse> Login(UserLogin user)
+    public async Task<LoginResponse> Login(UserLogin user)
     {
          try
         {
-            User userAchado = await _userRepository.Login(new User
+            // cria um objeto (user ) que é enviado ao repository para efetivar a busca de usuario
+            //se o usuario for encontrado sera feito a geração do token e enviado os dados.
+            User userProcurar = await _userRepository.Login(new User
             {
                 email = user.Email,
                 password = user.Password
@@ -59,13 +61,13 @@ public class UserService : IUserService
                 return new UserResponse();
             }
 
-            return new UserResponse
+            return new LoginResponse
             {
-                Id = userAchado.id_user,
-                Name = userAchado.name,
-                Username = userAchado.username,
-                Email = userAchado.email,
-                Password = userAchado.password
+                Id = userProcurar.id_user,
+                Name = userProcurar.name,
+                Username = userProcurar.username,
+                Email = userProcurar.email,
+                Token = 0;
             };
         }
         catch (Exception)

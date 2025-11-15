@@ -20,7 +20,7 @@ public class UserController : ControllerBase
 
     // CREATE
     [HttpPost("add"), Produces("application/json")]
-    public async Task<ActionResult<UserResponse>> AddUser(UserCreation user)
+    public async Task<ActionResult<UserResponse>> AddUser([FromBody]UserCreation user)
     {
         try
         {
@@ -41,6 +41,8 @@ public class UserController : ControllerBase
     }
     [HttpPost("login"), Produces("application/json")]
     public async Task<ActionResult<UserResponse>> Login([FromBody]UserLogin user)
+    // para evitar erros da ligação do front via json utilize [FromBody] para mudança ou adção ao banco de dados,
+    // [FromQuerry] para efetuar buscas.
     {
         try
         {
@@ -61,7 +63,7 @@ public class UserController : ControllerBase
     }
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserResponse>> GetUser(uint id)
+    public async Task<ActionResult<UserResponse>> GetUser([FromQuerry]uint id)
     {
         try
         {
@@ -82,7 +84,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("getreviews/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserReviewsResponse>> GetUserReviews(uint id)
+    public async Task<ActionResult<UserReviewsResponse>> GetUserReviews([FromQuerry]uint id)
     {
         try
         {
@@ -127,7 +129,7 @@ public class UserController : ControllerBase
 
     // UPDATE
     [HttpPut("update/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserResponse>> UpdateUser(uint id, UserCreation userNovo)
+    public async Task<ActionResult<UserResponse>> UpdateUser([FromBody]uint id, UserCreation userNovo)
     {
         try
         {
