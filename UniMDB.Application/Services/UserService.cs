@@ -6,10 +6,15 @@ namespace UniMDB.Application.Services;
 
 public class UserService : IUserService
 {
+    // a partir daqui será feita a distribuição do service para o repository
+    // utilizará o gerador do token.
     private readonly IUserRepository _userRepository;
-    public UserService(IUserRepository userRepository)
+    private readonly IJwtService _jwtService;
+    
+    public UserService(IUserRepository userRepository, IJwtService jwtService)
     {
-        _userRepository = userRepository;
+     _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+    _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
     }
 
 
@@ -46,35 +51,43 @@ public class UserService : IUserService
     }
     public async Task<LoginResponse> Login(UserLogin user)
     {
-         try
+        try
         {
-            // cria um objeto (user ) que é enviado ao repository para efetivar a busca de usuario
-            //se o usuario for encontrado sera feito a geração do token e enviado os dados.
-            User userProcurar = await _userRepository.Login(new User
+            // Busca o usuário no banco
+            User userProcurado = await _userRepository.Login(new User
             {
                 email = user.Email,
                 password = user.Password
             });
 
-            if (userAchado == null)
+            // Se não encontrou
+            if (userProcurado == null)
             {
-                return new UserResponse();
+                return null; 
             }
 
-            return new LoginResponse
-            {
-                Id = userProcurar.id_user,
-                Name = userProcurar.name,
-                Username = userProcurar.username,
-                Email = userProcurar.email,
-                Token = 0;
-            };
-        }
-        catch (Exception)
+            // Gera o token JWT
+            string token = _jwtService.GenerateToken(
+            userProcurado.id_user,
+            userProcurado.email,
+            userProcurado.username
+        );
+
+        // Retorna os dados + token
+        return new LoginResponse
         {
-            throw;
-        }
+            Id = userProcurado.id_user,
+            Name = userProcurado.name,
+            Username = userProcurado.username,
+            Email = userProcurado.email,
+            Token = token
+        };
     }
+    catch (Exception)
+    {
+        throw;
+    }
+}
     public async Task<List<UserResponse>> AddBatchUser(List<UserCreation> users)
     {
         try
@@ -157,36 +170,7 @@ public class UserService : IUserService
             throw;
         }
     }
-    // public async Task<UserResponse> GetUserBySession(UserLogin user)
-    // {
-    //     try
-    //     {
-    //         User? userAchado = await _userRepository.GetUserBySessionAsync(new User
-    //         {
-    //             username = user.Username,
-    //             email = user.Email,
-    //             password = user.Password
-    //         });
 
-    //         if (userAchado == null)
-    //         {
-    //             return new UserResponse();
-    //         }
-
-    //         return new UserResponse
-    //         {
-    //             Id = userAchado.id_user,
-    //             Name = userAchado.name,
-    //             Username = userAchado.username,
-    //             Email = userAchado.email,
-    //             Password = userAchado.password
-    //         };
-    //     }
-    //     catch (Exception)
-    //     {
-    //         throw;
-    //     }
-    // }
     public async Task<UserReviewsResponse> GetAllReviewsByUserId(uint id)
     {
         try

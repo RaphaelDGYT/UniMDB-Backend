@@ -4,6 +4,8 @@ using UniMDB.Application.Dtos;
 using UniMDB.Application.Services;
 using UniMDB.Domain.Entities;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Mvc;
+using UniMDB.Infrastructure.Repositories;
 
 namespace UniMDB.API.Controllers;
 
@@ -11,11 +13,22 @@ namespace UniMDB.API.Controllers;
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
+    // utilização do service para meio de comunicação com o repositorys e fazer validações.
     private readonly IUserService _userService;
+
     public UserController(IUserService userService)
     {
         _userService = userService;
     }
+
+    // utilização de [FromBody], [FromQuery] e [FromRoute]
+    //[FromQuery] Serve para ler dados que vêm da query string da URL a parte da que vem depois
+    //  do ? e separada por &.
+    // [FromRoute]Serve para ler dados que vêm da rota da URL
+    // Os valores que fazem parte da URL em si, não da query string.
+    // [FromBody]Normalmente usado em requisições POST, PUT ou PATCH, quando você envia um objeto JSON ou XML.
+    // Os dados não vêm da URL, mas sim do body da requisição.
+
 
 
     // CREATE
@@ -39,31 +52,29 @@ public class UserController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
-    [HttpPost("login"), Produces("application/json")]
-    public async Task<ActionResult<UserResponse>> Login([FromBody]UserLogin user)
-    // para evitar erros da ligação do front via json utilize [FromBody] para mudança ou adção ao banco de dados,
-    // [FromQuerry] para efetuar buscas.
-    {
-        try
-        {
-            UserResponse userNovo = await _userService.Login(user);
 
-            if (userNovo.Id == 0)
+    [HttpPost("login"), Produces("application/json")]
+        public async Task<ActionResult<LoginResponse>> Login([FromBody]UserLogin user)
+        {
+            try
             {
-                return BadRequest(user);
+            LoginResponse userNovo = await _userService.Login(user);
+
+            if (userNovo == null)
+            {
+                    return Unauthorized("Email ou senha inválidos");
             }
 
-            return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
-
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
+        return Ok(userNovo);
     }
+    catch (Exception ex)
+    {
+        return StatusCode(500, ex.Message);
+    }
+}
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserResponse>> GetUser([FromQuerry]uint id)
+    public async Task<ActionResult<UserResponse>> GetUser([FromQuery]uint id)
     {
         try
         {
@@ -84,7 +95,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("getreviews/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserReviewsResponse>> GetUserReviews([FromQuerry]uint id)
+    public async Task<ActionResult<UserReviewsResponse>> GetUserReviews([FromQuery]uint id)
     {
         try
         {
@@ -129,7 +140,7 @@ public class UserController : ControllerBase
 
     // UPDATE
     [HttpPut("update/{id}"), Produces("application/json")]
-    public async Task<ActionResult<UserResponse>> UpdateUser([FromBody]uint id, UserCreation userNovo)
+    public async Task<ActionResult<UserResponse>> UpdateUser([FromQuery]uint id,[FromBody]UserCreation userNovo)
     {
         try
         {

@@ -2,7 +2,7 @@ namespace UniMDB.Application.Dtos;
 
 //  DTO começam com maiuscula
 
-public class UserResponse
+public class LoginResponse
 {
     public uint Id { get; set; } = 0;
     public string Name { get; set; } = String.Empty;

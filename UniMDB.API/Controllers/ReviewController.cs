@@ -2,6 +2,7 @@
 using UniMDB.Application.Dtos;
 using UniMDB.Application.Services;
 using UniMDB.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace UniMDB.API.Controllers;
 
@@ -19,7 +20,7 @@ public class ReviewController : ControllerBase
 
     // CREATE
     [HttpPost("add"), Produces("application/json")]
-    public async Task<ActionResult<ReviewResponse>> AddReview([FromQuerry]ReviewCreation review)
+    public async Task<ActionResult<ReviewResponse>> AddReview([FromBody]ReviewCreation review)
     {
         try
         {
@@ -40,7 +41,7 @@ public class ReviewController : ControllerBase
 
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
-    public async Task<ActionResult<ReviewResponse>> GetReview([FromQuerry]uint id)
+    public async Task<ActionResult<ReviewResponse>> GetReview([FromRoute]uint id)
     {
         try
         {
@@ -85,7 +86,7 @@ public class ReviewController : ControllerBase
 
     // UPDATE
     [HttpPut("update/{id}"), Produces("application/json")]
-    public async Task<ActionResult<ReviewResponse>> UpdateReview([FromQuerry]uint id, ReviewUpdate reviewNova)
+    public async Task<ActionResult<ReviewResponse>> UpdateReview([FromQuery]uint id, [FromBody] ReviewUpdate reviewNova)
     {
         try
         {

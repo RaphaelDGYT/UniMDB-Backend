@@ -8,7 +8,7 @@ public interface IUserService
     // CREATE
     Task<UserResponse> AddUser(UserCreation user);
     Task<List<UserResponse>> AddBatchUser(List<UserCreation> users);
-    Task<UserResponse> Login(UserLogin user);
+    Task<LoginResponse> Login(UserLogin user);
 
     // READ
     Task<List<uint>> GetAllUserIds();

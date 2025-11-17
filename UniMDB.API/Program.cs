@@ -9,6 +9,8 @@ using UniMDB.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Cryptography.X509Certificates;
 using UniMDB.Application.Dtos;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +22,35 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+
+
+// 
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            )
+        };
+    });
+
+builder.Services.AddScoped<JwtService>();
+
+
 // o codigo abaixo ele libera qualquer pessoa com o link a utilizar a api, utilize isso apenas para teste
 // APOS O USO APAGAR ESSE CODIGO.
-//builder.Services.AddCors(options =>
+// builder.Services.AddCors(options =>
 // {
 //     options.AddPolicy("AllowAll", policy =>
 //     {
@@ -32,6 +60,8 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 //             .AllowAnyHeader();
 //     });
 // });
+//o trecho acaba aqui tudo entre esse comentario pode apagar isso é utilizado apenas para teste via codespace
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var Env_Var = builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
@@ -76,7 +106,7 @@ else
     using (var scope = app.Services.CreateAsyncScope())
     {
         var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
-        UserService userService = new UserService(new UserRepository(db));
+        var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
         ReviewService reviewService = new ReviewService(new ReviewRepository(db));
         
         const uint qntd_users_fakes = 0;
@@ -114,10 +144,12 @@ else
 
 app.UseSwagger();
 app.UseSwaggerUI();
-// app.UseCors("AllowAll"); NÃO ESQUÇA DE APAGAR ESSA LINHA
+// app.UseCors("AllowAll"); //NÃO ESQUÇA DE APAGAR ESSA LINHA
 //app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 
