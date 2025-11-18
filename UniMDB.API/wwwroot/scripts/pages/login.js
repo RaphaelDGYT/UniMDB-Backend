@@ -20,8 +20,7 @@ function fazPost(url, body, callback) {
  
 function loginUsuario(event) {
   event.preventDefault();
- 
-  const url = "https://probable-system-6jgj7qp5rwvc44jx-5254.app.github.dev/api/User/login";
+  const url = "/api/User/login";
   const email = document.getElementById("email").value;
   const passwordValue = document.getElementById("password").value;
  

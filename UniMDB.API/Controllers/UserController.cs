@@ -52,26 +52,6 @@ public class UserController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
-
-    [HttpPost("login"), Produces("application/json")]
-    public async Task<ActionResult<LoginResponse>> GetUserBySession([FromBody]UserLogin user)
-    {
-        try
-        {
-            LoginResponse userNovo = await _userService.GetUserBySession(user);
-
-            if (userNovo == null)
-            {
-                    return Unauthorized("Email ou senha inválidos");
-            }
-
-            return Ok(userNovo);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
     
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
@@ -112,6 +92,26 @@ public class UserController : ControllerBase
         catch
         {
             throw;
+        }
+    }
+
+    [HttpPost("login"), Produces("application/json")]
+    public async Task<ActionResult<LoginResponse>> GetUserBySession([FromBody]UserLogin user)
+    {
+        try
+        {
+            LoginResponse userNovo = await _userService.GetUserBySession(user);
+
+            if (userNovo == null)
+            {
+                    return Unauthorized("Email ou senha inválidos");
+            }
+
+            return Ok(userNovo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
         }
     }
 

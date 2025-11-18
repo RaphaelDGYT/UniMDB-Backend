@@ -38,7 +38,7 @@ function fazPost(url, body) {
 function cadastraUsuario(event) {
   event.preventDefault(); 
 
-  const url = "https://opulent-giggle-ggqgwjprxr73jxj-5254.app.github.dev/api/User/add";
+  const url = "/api/User/add";
   const valorName = document.getElementById("name").value;
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;

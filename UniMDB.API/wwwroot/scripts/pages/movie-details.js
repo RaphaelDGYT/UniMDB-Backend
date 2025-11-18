@@ -90,7 +90,7 @@ function fazPost(url, body) {
 function cadastraReview(event) {
   event.preventDefault(); 
 
-  const url = "https://probable-system-6jgj7qp5rwvc44jx-5254.app.github.dev/api/Review/add";
+  const url = "/api/Review/add";
   const comment = document.getElementById("comment").value;
   const id_user = 15;
   const id_movie = id;
