@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/layouts/_header.css">
+    <link rel="stylesheet" href="../styles/layouts/review.css">
+    <link rel="stylesheet" href="../styles/components/_buttonExample.css">
+    <link rel="stylesheet" href="../styles/layouts/footer.css">
+
+    <title>Detalhes do filme</title>
+</head>
+<body>
+
+        <header>
+        <a href="../index.html" class="logo btn">
+            <img src="../images/logo-separada.png" alt="uniMDB">
+        </a>
+        <div class="headerSemLogin" id="headerSemLogin">
+            <a href="../pages/login.html" class="nav-link">Login</a>
+            <a href="../pages/register.html" class="nav-link">Registro</a>
+        </div>
+        <div class="headerComLogin" id="headerComLogin">
+            <a href="#" class="nav-link">Favoritos</a>
+            <a href="#" class="nav-link">Avaliados</a>
+            <a href="../pages/user-profile.html" class="nav-link">Perfil</a>
+        </div>
+    </header>
+
+
+    <main id="detalhes-filme">
+        <div class="content">
+            <img id="poster" alt="Poster do filme">
+            <h1 id="titulo"></h1>
+            <h1>Ano de estreia:</h1> <h2><span id="ano"></span</h2>
+            <h1>Nota:</h1> <h2><span id="nota"></span</h2>
+            <h1>Sinopse:</h1> <h2><span id="sinopse"></span</h2>
+            <button id="btnAvaliar">Avaliar</button>
+        </div>
+        <form onsubmit="cadastraReview(event)">
+            <div id="modal" class="modal">
+                <div class="container">
+                    <img src="../images/claquete_modelo.jpg" class="fundo">
+                    <span id="fechar" class="close">&times;</span>
+                    <div class="titulo" id="tituloFilme"></div>
+
+                    <div class="estrelas" id="estrelas"></div>
+
+                    <div class="avaliacao-texto">
+                        <textarea placeholder="Escreva sua opinião..." rows="3" id="comment"></textarea>
+                        <button class="submit">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 UniMDB. Todos os direitos reservados.</p>
+    </footer>
+   
+
+    <script src="../scripts/pages/movie-details.js" defer></script>
+    <script src="../scripts/services/validation/userValidation.js" defer></script>
+
+ 
+</body>
+<script src="" defer></script>
+</html>

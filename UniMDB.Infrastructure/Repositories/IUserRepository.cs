@@ -16,7 +16,6 @@ public interface IUserRepository
     // CREATE
     Task<User> AddUserAsync(User user);
     Task<List<User>> AddBatchUserAsync(List<User> users);
-    Task<User?> Login(User user);
 
     // READ
     Task<List<uint>> GetAllUserIdsAsync();

@@ -1,0 +1,8 @@
+footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    font-family: "Press Start 2P", system-ui; 
+    font-size: xx-small;
+}

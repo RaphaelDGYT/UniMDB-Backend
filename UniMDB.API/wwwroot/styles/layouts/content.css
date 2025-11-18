@@ -1,0 +1,18 @@
+#content, #novidades, #destaques, #melhores, #populares{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 25px;
+  padding: 30px;
+  justify-items: center;
+}
+
+#content img, #novidades img, #destaques img, #melhores img, #populares img {
+  width: 150px;
+  height: 225px;
+  transition: transform 0.3s ease;
+  border: 3px solid #5b3992;
+}
+
+#content img:hover, #novidades img:hover, #destaques img:hover, #melhores img:hover, #populares img:hover {
+  transform: scale(1.10);
+}

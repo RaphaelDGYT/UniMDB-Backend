@@ -68,22 +68,6 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public Task<User?> Login(User UserLogin)
-    {
-        /*
-            faz a busca de usuarios, quando for igual ao requisitado, caso encontrado retorna suas informações 
-            o .ToLower foi utilizado apenas para testes, sua unica função é ignorar letras maiusculas eles apenas 
-            lê o valor da letra.
-        */
-        return _context.Users
-        .AsNoTracking()
-        .FirstOrDefaultAsync(u =>
-        u.password == UserLogin.password &&
-        u.email.ToLower() == UserLogin.email
-        );
-
-    }
-
     // READ
     public async Task<List<uint>> GetAllUserIdsAsync()
     {
@@ -145,7 +129,6 @@ public class UserRepository : IUserRepository
             return _context.Users
                         .AsNoTracking()
                         .FirstOrDefaultAsync(u =>
-                            u.username == userSession.username &&
                             u.password == userSession.password &&
                             u.email == userSession.email
                         );

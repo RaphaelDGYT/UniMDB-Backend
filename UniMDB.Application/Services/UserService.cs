@@ -13,8 +13,8 @@ public class UserService : IUserService
     
     public UserService(IUserRepository userRepository, IJwtService jwtService)
     {
-     _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-    _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
     }
 
 
@@ -49,45 +49,7 @@ public class UserService : IUserService
             throw;
         }
     }
-    public async Task<LoginResponse> Login(UserLogin user)
-    {
-        try
-        {
-            // Busca o usuário no banco
-            User userProcurado = await _userRepository.Login(new User
-            {
-                email = user.Email,
-                password = user.Password
-            });
 
-            // Se não encontrou
-            if (userProcurado == null)
-            {
-                return null; 
-            }
-
-            // Gera o token JWT
-            string token = _jwtService.GenerateToken(
-            userProcurado.id_user,
-            userProcurado.email,
-            userProcurado.username
-        );
-
-        // Retorna os dados + token
-        return new LoginResponse
-        {
-            Id = userProcurado.id_user,
-            Name = userProcurado.name,
-            Username = userProcurado.username,
-            Email = userProcurado.email,
-            Token = token
-        };
-    }
-    catch (Exception)
-    {
-        throw;
-    }
-}
     public async Task<List<UserResponse>> AddBatchUser(List<UserCreation> users)
     {
         try
@@ -138,6 +100,7 @@ public class UserService : IUserService
     {
         return await _userRepository.GetAllUserIdsAsync();
     }
+    
     public async Task<UserResponse> GetUserById(uint id)
     {
         try
@@ -169,6 +132,46 @@ public class UserService : IUserService
         {
             throw;
         }
+    }
+
+    public async Task<LoginResponse> GetUserBySession(UserLogin user)
+    {
+        try
+        {
+            // Busca o usuário no banco
+            User userProcurado = await _userRepository.GetUserBySessionAsync(new User
+            {
+                email = user.Email,
+                password = user.Password
+            });
+
+            // Se não encontrou
+            if (userProcurado == null)
+            {
+                return null; 
+            }
+
+            // Gera o token JWT
+            string token = _jwtService.GenerateToken(
+                userProcurado.id_user,
+                userProcurado.email,
+                userProcurado.username
+            );
+
+            // Retorna os dados + token
+            return new LoginResponse
+            {
+                Id = userProcurado.id_user,
+                Name = userProcurado.name,
+                Username = userProcurado.username,
+                Email = userProcurado.email,
+                Token = token
+            };
+        }
+            catch (Exception)
+            {
+                throw;
+            }
     }
 
     public async Task<UserReviewsResponse> GetAllReviewsByUserId(uint id)

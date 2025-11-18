@@ -54,24 +54,25 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("login"), Produces("application/json")]
-        public async Task<ActionResult<LoginResponse>> Login([FromBody]UserLogin user)
+    public async Task<ActionResult<LoginResponse>> GetUserBySession([FromBody]UserLogin user)
+    {
+        try
         {
-            try
-            {
-            LoginResponse userNovo = await _userService.Login(user);
+            LoginResponse userNovo = await _userService.GetUserBySession(user);
 
             if (userNovo == null)
             {
                     return Unauthorized("Email ou senha inválidos");
             }
 
-        return Ok(userNovo);
+            return Ok(userNovo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
-    catch (Exception ex)
-    {
-        return StatusCode(500, ex.Message);
-    }
-}
+    
     // READ
     [HttpGet("get/{id}"), Produces("application/json")]
     public async Task<ActionResult<UserResponse>> GetUser([FromQuery]uint id)

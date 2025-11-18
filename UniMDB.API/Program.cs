@@ -50,16 +50,16 @@ builder.Services.AddScoped<JwtService>();
 
 // o codigo abaixo ele libera qualquer pessoa com o link a utilizar a api, utilize isso apenas para teste
 // APOS O USO APAGAR ESSE CODIGO.
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy("AllowAll", policy =>
-//     {
-//         policy
-//             .AllowAnyOrigin()
-//             .AllowAnyMethod()
-//             .AllowAnyHeader();
-//     });
-// });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 //o trecho acaba aqui tudo entre esse comentario pode apagar isso é utilizado apenas para teste via codespace
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -144,13 +144,18 @@ else
 
 app.UseSwagger();
 app.UseSwaggerUI();
-// app.UseCors("AllowAll"); //NÃO ESQUÇA DE APAGAR ESSA LINHA
-//app.UseHttpsRedirection();
+app.UseCors("AllowAll"); //NÃO ESQUÇA DE APAGAR ESSA LINHA
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseDefaultFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 
 app.MapControllers();
+
+app.MapGet("/", () => Results.Redirect("/index.html"));
 
 app.Run();

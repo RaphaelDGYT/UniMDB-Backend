@@ -1,0 +1,13 @@
+button{
+  padding: 10px;
+  margin-bottom: 10px;
+  font-family: "Press Start 2P", system-ui;
+  background-color: #cbafff;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid #000000;
+}
+
+button:hover {
+  background-color: #b48eff;
+}

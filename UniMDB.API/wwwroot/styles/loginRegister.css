@@ -1,0 +1,89 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.press-start-2p-regular {
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  background-image: url('../images/fundo.png');
+  background-color: #ab82ff;
+  backdrop-filter:blur(3px);
+  background-position: center;
+  height: 100vh; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Press Start 2P", system-ui; 
+
+}
+
+.container {
+  font-family: "Press Start 2P", system-ui;
+  background-color: #e6d8ff;
+  text-align: center;
+  margin: 50% auto 0 auto;
+  width: 100%;          
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 3px solid black;
+  border-radius: 8px;
+
+}
+
+input{
+  background: #e6d8ff;
+  padding: 5px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  margin-top: 2px;
+  border: 2px solid #000000;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  body {
+    backdrop-filter: blur(3px); 
+  }
+
+  .container {
+    width: 85%;
+    margin-top: 20%;
+    padding: 15px;
+  }
+
+  button, input {
+    font-size: 12px; 
+  }
+
+  img {
+    width: 100px; 
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 90%;
+    margin-top: 25%;
+  }
+
+  button, input {
+    font-size: 10px; 
+    padding: 8px;
+  }
+
+  img {
+    width: 80px;
+  }
+}
+

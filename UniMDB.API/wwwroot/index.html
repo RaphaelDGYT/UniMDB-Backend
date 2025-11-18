@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/layouts/_header.css">
+    <link rel="stylesheet" href="./styles/layouts/content.css">
+    <link rel="stylesheet" href="./styles/layouts/footer.css">
+    
+    <title>Página Inicial</title>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo btn">
+            <img src="./images/logo-separada.png" alt="uniMDB">
+        </a>
+        <div class="headerSemLogin" id="headerSemLogin">
+            <a href="./pages/login.html" class="nav-link">Login</a>
+            <a href="./pages/register.html" class="nav-link">Registro</a>
+        </div>
+        <div class="headerComLogin" id="headerComLogin">
+            <a href="#" class="nav-link">Favoritos</a>
+            <a href="#" class="nav-link">Avaliados</a>
+            <a href="./pages/user-profile.html" class="nav-link">Perfil</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="barra-pesquisa">
+            <form action="" method="get">
+                <input type="text" id="barra-pesquisa" placeholder="Pesquisar">
+                <button type="submit" id="pesquisar"></button>
+            </form>
+        </div>
+        <div class="itens-home" id="itens-home">
+            <div class="populares">
+                <label for="populares">Populares no mundo</label><br>
+                <pre id="populares"></pre>
+            </div>
+            
+            <div class="melhores-avaliados">
+                <label for="melhores">Melhores avaliados</label><br>
+                <pre id="melhores"></pre>
+            </div>
+
+            <div class="destaques-semana">
+                <label for="destaques">Destaques da semana</label><br>
+                <pre id="destaques"></pre>
+            </div>
+
+            <div class="novidades">
+                <label for="novidades">Novidades</label><br>
+                <pre id="novidades"></pre>
+            </div>
+        </div>
+        <pre id="content">
+        </pre>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 UniMDB. Todos os direitos reservados.</p>
+    </footer>
+</body>
+<script src="./scripts/pages/home.js" defer></script>
+<script src="./scripts/services/validation/userValidation.js" defer></script>
+</html>
