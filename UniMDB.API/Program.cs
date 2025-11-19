@@ -109,6 +109,8 @@ else
         var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
         ReviewService reviewService = new ReviewService(new ReviewRepository(db));
         
+       
+
         const uint qntd_users_fakes = 0;
         const uint qntd_reviews_fakes = 0;
 

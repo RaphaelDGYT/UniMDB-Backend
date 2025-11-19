@@ -7,7 +7,7 @@ public class Review
 {
     public uint id_review { get; set; }
     public uint id_review_user { get; set; }
-    [StringLength(maximumLength:9, MinimumLength = 9)]
+    [StringLength(maximumLength:12)]
     public string id_movie_mdb { get; set; }
     [Range(0, 10)]
     public byte review { get; set; }

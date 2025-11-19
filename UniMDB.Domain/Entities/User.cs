@@ -18,4 +18,6 @@ public class User
 
     [JsonIgnore]
     public virtual ICollection<Review> reviews { get; set; }
+    [JsonIgnore]
+    public virtual ICollection<Favorite> favorites { get; set; }
 }

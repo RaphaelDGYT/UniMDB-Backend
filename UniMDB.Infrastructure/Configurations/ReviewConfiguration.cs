@@ -19,7 +19,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder
             .Property(r => r.id_movie_mdb)
             .IsRequired()
-            .HasMaxLength(9)
+            .HasMaxLength(12)
             .IsFixedLength();
 
         builder

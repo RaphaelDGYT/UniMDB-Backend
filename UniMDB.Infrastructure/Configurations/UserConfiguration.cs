@@ -27,6 +27,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(r => r.id_review_user)
             .IsRequired(false);
 
+        builder
+            .HasMany(u => u.favorites)
+            .WithOne(f => f.user)
+            .HasForeignKey(f => f.id_user)
+            .IsRequired(false);
+        
+    
 
         builder.Property(u => u.name)
             .IsRequired()
