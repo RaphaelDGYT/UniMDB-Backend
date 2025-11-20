@@ -23,7 +23,7 @@ public interface IUserRepository
     Task<User?> GetUserBySessionAsync(User user);
     Task<List<Review>> GetAllReviewsByUserIdAsync(uint id);
 
-
+    Task<List<Favorite>> GetAllFavoriteByUserIdAsync(uint id_user);
     //Task<User> GetUserByReview(uint reviewId);
 
 

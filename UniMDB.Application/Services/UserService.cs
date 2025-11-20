@@ -234,7 +234,65 @@ public class UserService : IUserService
             throw;
         }
     }
+    public async Task<UserFavoriteResponse> GetAllFavoritesByUserId(uint id)
+    {
+        try
+        {
+            User user = await _userRepository.GetUserByIdAsync(id);
 
+            if (user == null)
+            {
+                return new UserFavoriteResponse
+                {
+                    UserFavorite = new User
+                    {
+                        id_user = 0,
+                        name = string.Empty,
+                        username = string.Empty,
+                        email = string.Empty,
+                        password = string.Empty
+                    },
+                    Favorites = Enumerable.Empty<FavoriteResponseList>().ToList()
+                };
+            }
+
+            List<Favorite> favorites = await _userRepository.GetAllFavoriteByUserIdAsync(id);
+
+            if (favorites.Count == 0)
+            {
+                return new UserFavoriteResponse
+                {
+                    UserFavorite = user,
+                    Favorites = Enumerable.Empty<FavoriteResponseList>().ToList()
+                };
+            }
+
+            // Resposta
+
+            List<FavoriteResponseList> favoritesResponses = new List<FavoriteResponseList>(favorites.Count);
+
+            foreach (var favorite in favorites)
+            {
+                favoritesResponses.Add(new FavoriteResponseList
+                {
+                    Id_Favorite = favorite.id_favorite,
+                    Id_User = favorite.id_user,
+                    Id_Movie_Mdb = favorite.id_movie_mdb,
+                    
+                });
+            }
+
+            return new UserFavoriteResponse
+            {
+                UserFavorite = user,
+                Favorites = favoritesResponses
+            };
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
     // UPDATE
     public async Task<UserResponse> UpdateUser(uint id, UserCreation user)
     {

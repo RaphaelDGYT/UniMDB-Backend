@@ -11,15 +11,14 @@ namespace UniMDB.Domain.Interfaces;
 public interface IFavoriteRepository
 {
     // CREATE
-    Task<Review> AddFavoriteAsync(Favorite favorite);
-    Task<List<Review>> AddBatchFavoriteAsync(List<Favorite> favorites);
+    Task<Favorite> AddFavoriteAsync(Favorite favorite);
+    Task<List<Favorite>> AddBatchFavoriteAsync(List<Favorite> favorites);
 
     // READ
-    Task<Review?> GetFavoriteByIdAsync(uint id);
-    Task<List<Review>> GetAllFavoriteByUserIdAsync(uint id_user);
+    Task<Favorite?> GetFavoriteByIdAsync(uint id);
+   
 
-    // UPDATE
-    Task<Review?> UpdateFavoriteAsync(uint id, Favorite FavoriteNova);
+
     
     // DELETE
     Task<bool> DeleteFavoriteAsync(uint id);

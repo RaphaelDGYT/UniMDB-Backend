@@ -139,6 +139,22 @@ public class UserRepository : IUserRepository
         }
 
     }
+    public async Task<List<Favorite>> GetAllFavoriteByUserIdAsync(uint id_user)
+    {
+        try
+        {
+            return await _context.Favorites
+                                    .AsNoTracking()
+                                    .Where(f => f.id_favorite == id_user)
+                                    .ToListAsync()
+                                    ??
+                                    Enumerable.Empty<Favorite>().ToList();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
     public async Task<List<Review>> GetAllReviewsByUserIdAsync(uint id)
     {
         try

@@ -1,21 +1,20 @@
 using UniMDB.Application.Dtos;
 using UniMDB.Domain.Entities;
+using UniMDB.Domain.Interfaces;
+using UniMDB.Infrastructure.Data;
+using UniMDB.Infrastructure.Repositories;
 
 namespace UniMDB.Application.Services;
 
 public interface IFavoriteService
 {
     // CREATE
-    Task<ReviewResponse> AddFavorite(ReviewCreation review);
-    Task<List<ReviewResponse>> AddBatchFavorite(List<ReviewCreation> reviews);
+    Task<FavoriteResponse> AddFavorite(FavoriteCreation favorite);
+    Task<List<FavoriteResponse>> AddBatchFavorite(List<FavoriteCreation> favorites);
 
     // READ
-    Task<ReviewResponse> GetFavoriteById(uint id_review);
-    // Task<List<FavoriteResponse>> GetALLFavoritesByUser<List<Favorite>;
-
-    // UPDATE
-    Task<ReviewResponse> UpdateFavorite(uint id_review, ReviewUpdate review);
+    Task<FavoriteResponse> GetFavoriteById(uint id_favorite);
     
     // DELETE
-    Task<bool> DeleteFavorite(uint id_review);
+    Task<bool> DeleteFavorite(uint id_favorite);
 }

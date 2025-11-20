@@ -8,37 +8,32 @@ namespace UniMDB.Application.Services;
 
 public class FavoriteService : IFavoriteService
 {
-    private readonly IReviewRepository _reviewRepository;
-    public FavoriteService(IReviewRepository reviewRepository)
+    private readonly IFavoriteRepository _favoriteRepository;
+    public FavoriteService(IFavoriteRepository favoriteRepository)
     {
-        _reviewRepository = reviewRepository;
+        _favoriteRepository = favoriteRepository;
     }
 
     // CREATE
-    public async Task<ReviewResponse> AddFavorite(ReviewCreation review)
+    public async Task<FavoriteResponse> AddFavorite(FavoriteCreation favorite)
     {
         try
         {
-            Review reviewAdicionar = new Review
+            Favorite favoriteAdicionar = new Favorite
             {
-                id_review = 0,
-                id_review_user = review.Id_User,
-                id_movie_mdb = review.Id_Movie,
-                review = review.Score,
-                comment = review.Comment,
-                created_at = DateTime.Now
+                id_favorite = 0,
+                id_user = favorite.Id_User,
+                id_movie_mdb = favorite.Id_Movie_Mdb,
             };
 
-            Review reviewNova = await _reviewRepository.AddFavoriteAsync(reviewAdicionar);
+            Favorite FavoriteNovo = await _favoriteRepository.AddFavoriteAsync(favoriteAdicionar);
 
-            return new ReviewResponse
+            return new FavoriteResponse
             {
-                Id = reviewNova.id_review,
-                User_Id = reviewAdicionar.id_review_user,
-                Movie_Id = reviewAdicionar.id_movie_mdb,
-                Score = reviewAdicionar.review,
-                Comment = reviewAdicionar.comment,
-                Created_at = reviewAdicionar.created_at
+                Id_Favorite = FavoriteNovo.id_favorite,
+                Id_User = FavoriteNovo.id_user,
+                Id_Movie_Mdb = FavoriteNovo.id_movie_mdb,
+                
             };
         }
         catch
@@ -47,45 +42,40 @@ public class FavoriteService : IFavoriteService
         }
     }
     
-    public async Task<List<ReviewResponse>> AddBatchFavorite(List<ReviewCreation> reviews)
+    public async Task<List<FavoriteResponse>> AddBatchFavorite(List<FavoriteCreation> favorites)
     {
         try
         {
-            List<Review> batchReviews = new List<Review>();
+            List<Favorite> batchFavorites = new List<Favorite>();
 
-            foreach (var review in reviews)
+            foreach (var favorite in favorites)
             {
-                batchReviews.Add(new Review
+                batchFavorites.Add(new Favorite
                 {
-                    id_review = 0,
-                    id_review_user = review.Id_User,
-                    id_movie_mdb = review.Id_Movie,
-                    review = review.Score,
-                    comment = review.Comment,
-                    created_at = DateTime.Now
+                    id_favorite = 0,
+                    id_user = favorite.Id_User,
+                    id_movie_mdb = favorite.Id_Movie_Mdb,
+                    
                 });
             }
 
-            List<Review> reviewsAdicionadass = await _reviewRepository.AddBatchFavoriteAsync(batchReviews);
+            List<Favorite> favoritesAdicionadas = await _favoriteRepository.AddBatchFavoriteAsync(batchFavorites);
 
             // Resposta
 
-            List<ReviewResponse> reviewsResponses = new List<ReviewResponse>();
+            List<FavoriteResponse> favoriteResponses = new List<FavoriteResponse>();
 
-            foreach (var review in reviewsAdicionadass)
+            foreach (var favorite in favoritesAdicionadas)
             {
-                reviewsResponses.Add(new ReviewResponse
+                favoriteResponses.Add(new FavoriteResponse
                 { 
-                    Id = review.id_review,
-                    User_Id = review.id_review_user,
-                    Movie_Id = review.id_movie_mdb,
-                    Score = review.review,
-                    Comment = review.comment,
-                    Created_at = review.created_at
+                    Id_Favorite= favorite.id_favorite,
+                    Id_User = favorite.id_user,
+                    Id_Movie_Mdb = favorite.id_movie_mdb,
+                   
                 });
             }
-
-            return reviewsResponses;
+            return favoriteResponses;
         }
         catch 
         {
@@ -94,58 +84,31 @@ public class FavoriteService : IFavoriteService
     }
     
     // READ
-    public async Task<ReviewResponse> GetFavoriteById(uint id_review)
+    public async Task<FavoriteResponse> GetFavoriteById(uint id_favorite)
     {
-        Review? review = await _reviewRepository.GetReviewByIdAsync(id_review);
+        Favorite? favorite = await _favoriteRepository.GetFavoriteByIdAsync(id_favorite);
 
-        if (review == null)
+        if (favorite == null)
         {
-            return new ReviewResponse();
+            return new FavoriteResponse();
         }
 
-        return new ReviewResponse
+        return new FavoriteResponse
         {
-            Id = review.id_review,
-            User_Id = review.id_review_user,
-            Movie_Id = review.id_movie_mdb,
-            Score = review.review,
-            Comment = review.comment,
-            Created_at = review.created_at
+            Id_Favorite = favorite.id_favorite,
+            Id_User = favorite.id_user,
+            Id_Movie_Mdb = favorite.id_movie_mdb,
+            
         };
     }   
 
-    // public async Task<FavoriteResponse> GetAllFavoritesByUser<>
-    // {
-        
-    // }
+   
     
-    // UPDATE
-    public async Task<ReviewResponse> UpdateFavorite(uint id_review, ReviewUpdate review)
-    {
-
-        Review reviewAlterada = new Review
-        {
-            review = review.Score,
-            comment = review.Comment
-        };
-
-        Review reviewNova = await _reviewRepository.UpdateReviewAsync(id_review, reviewAlterada);
-
-        return new ReviewResponse
-        {
-            Id = id_review,
-            User_Id = reviewNova.id_review_user,
-            Movie_Id = reviewNova.id_movie_mdb,
-            Score = reviewNova.review,
-            Comment = reviewNova.comment,
-            Created_at = reviewNova.created_at
-        };
-    }
     
     // DELETE
-    public async Task<bool> DeleteFavorite(uint id_review)
+    public async Task<bool> DeleteFavorite(uint id_favorite)
     {
-        return await _reviewRepository.DeleteReviewAsync(id_review);
+        return await _favoriteRepository.DeleteFavoriteAsync(id_favorite);
     }
 
 }

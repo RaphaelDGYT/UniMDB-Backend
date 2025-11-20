@@ -138,6 +138,19 @@ public class UserController : ControllerBase
 
     }
     */
+    [HttpGet("GetAllFavorite/{id}")]
+        public async Task<IActionResult> GetAllFavoritesByUserId(uint id)
+        {
+            var result = await _userService.GetAllFavoritesByUserId(id);
+
+            
+            if (result == null)
+                return NotFound("Nenhum favorito encontrado para esse usuário.");
+
+            return Ok(result);
+        }
+    
+
 
     // UPDATE
     [HttpPut("update/{id}"), Produces("application/json")]

@@ -14,7 +14,7 @@ public interface IUserService
     Task<UserResponse> GetUserById(uint id);
     Task<LoginResponse> GetUserBySession(UserLogin user);
     Task<UserReviewsResponse> GetAllReviewsByUserId(uint id);
-
+    Task<UserFavoriteResponse> GetAllFavoritesByUserId(uint id);
 
     //Task<User> GetUserByReview(uint reviewId);
 
