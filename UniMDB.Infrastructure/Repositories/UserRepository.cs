@@ -145,7 +145,7 @@ public class UserRepository : IUserRepository
         {
             return await _context.Favorites
                                     .AsNoTracking()
-                                    .Where(f => f.id_favorite == id_user)
+                                    .Where(f => f.id_user == id_user)
                                     .ToListAsync()
                                     ??
                                     Enumerable.Empty<Favorite>().ToList();
