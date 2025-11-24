@@ -31,7 +31,7 @@ public class FavoriteController : ControllerBase
                 return BadRequest(favorite);
             }
 
-            return CreatedAtAction(nameof(Getfavorite), new { favoriteNovo.Id_Favorite }, favoriteNovo);
+            return CreatedAtAction(nameof(Getfavorite), new { id = favoriteNovo.Id_Favorite },favoriteNovo);
         }
         catch (Exception ex)
         {

@@ -74,24 +74,16 @@ public class ReviewRepository : IReviewRepository
         return review;
     }
 
-    /*
-    public async Task<List<Review>> GetAllReviewsByUserIdAsync(uint id_user)
+    
+    public async Task<List<Review>> GetAllReviewsByMovieIdAsync(string id_movie)
     {
-        try
-        {
-            return await _context.Reviews
-                                    .AsNoTracking()
-                                    .Where(r => r.id_review_user == id_user)
-                                    .ToListAsync()
-                                    ??
-                                    Enumerable.Empty<Review>().ToList();
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+    return await _context.Reviews
+        .AsNoTracking()
+        .Where(r => r.id_movie_mdb == id_movie)
+        .ToListAsync();
     }
-    */
+
+    
 
 // UPDATE
 public async Task<Review?> UpdateReviewAsync(uint id, Review reviewNova)

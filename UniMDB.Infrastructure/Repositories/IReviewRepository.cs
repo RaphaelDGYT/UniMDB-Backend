@@ -18,7 +18,7 @@ public interface IReviewRepository
 
     // READ
     Task<Review?> GetReviewByIdAsync(uint id);
-    //Task<List<Review>> GetAllReviewsByUserIdAsync(uint id_user);
+    Task<List<Review>> GetAllReviewsByMovieIdAsync(string id_movie);
 
     // UPDATE
     Task<Review?> UpdateReviewAsync(uint id, Review reviewNova);

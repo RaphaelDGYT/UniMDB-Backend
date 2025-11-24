@@ -11,7 +11,7 @@ public interface IReviewService
 
     // READ
     Task<ReviewResponse> GetReviewById(uint id_review);
-
+    Task<ReviewsMoviesResponse> GetAllReviewsByMovieId(string id_movie);
     // UPDATE
     Task<ReviewResponse> UpdateReview(uint id_review, ReviewUpdate review);
     

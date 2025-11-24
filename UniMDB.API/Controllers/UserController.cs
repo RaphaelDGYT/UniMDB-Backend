@@ -44,7 +44,7 @@ public class UserController : ControllerBase
                 return BadRequest(user);
             }
 
-            return CreatedAtAction(nameof(GetUser), new { userNovo.Id }, userNovo);
+            return CreatedAtAction(nameof(GetUser),new { id = userNovo.Id }, userNovo);
 
         }
         catch (Exception ex)

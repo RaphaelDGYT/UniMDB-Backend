@@ -31,7 +31,7 @@ public class ReviewController : ControllerBase
                 return BadRequest(review);
             }
 
-            return CreatedAtAction(nameof(GetReview), new { reviewNova.Id }, reviewNova);
+            return CreatedAtAction(nameof(GetReview), new { id = reviewNova.Id }, reviewNova);
         }
         catch (Exception ex)
         {
@@ -61,6 +61,26 @@ public class ReviewController : ControllerBase
         }
     }
 
+    [HttpGet("getall/{id_movie}"), Produces("application/json")]
+    public async Task<ActionResult<List<ReviewResponseList>>> GetAllReviewsByMovieId([FromRoute] string id_movie)
+    {
+    try
+    {
+        var reviews = await _reviewService.GetAllReviewsByMovieId(id_movie);
+
+        if (reviews == null || reviews.Reviews == null || reviews.Reviews.Count == 0)
+        {
+            return NotFound($"Nenhuma review encontrada para o filme ID ({id_movie}).");
+        }
+
+        return Ok(reviews);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, ex.Message);
+    }
+    }
+
     /*
     [HttpGet("getall/{id_user}"), Produces("application/json")]
     public async Task<ActionResult<List<ReviewResponseAPI>>> GetAllReviewsByUser(uint id_user)
@@ -83,6 +103,7 @@ public class ReviewController : ControllerBase
 
     }
     */
+    
 
     // UPDATE
     [HttpPut("update/{id}"), Produces("application/json")]

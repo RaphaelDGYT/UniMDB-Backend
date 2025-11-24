@@ -113,7 +113,33 @@ public class ReviewService : IReviewService
             Created_at = review.created_at
         };
     }   
-    
+    public async Task<ReviewsMoviesResponse> GetAllReviewsByMovieId(string id_movie)
+    {
+    List<Review> reviews = await _reviewRepository.GetAllReviewsByMovieIdAsync(id_movie);
+
+    if (reviews == null || reviews.Count == 0)
+    {
+        return new ReviewsMoviesResponse
+        {
+            Movies_Id = id_movie,
+            Reviews = new List<ReviewResponseList>()
+        };
+    }
+
+    return new ReviewsMoviesResponse
+    {
+        Movies_Id = id_movie,
+        Reviews = reviews.Select(r => new ReviewResponseList
+        {
+            Id = r.id_review,
+            User_Id = r.id_review_user,
+            Movie_Id = r.id_movie_mdb,
+            Score = r.review,
+            Comment = r.comment,
+            Created_at = r.created_at
+        }).ToList()
+    };
+    }
     // UPDATE
     public async Task<ReviewResponse> UpdateReview(uint id_review, ReviewUpdate review)
     {
