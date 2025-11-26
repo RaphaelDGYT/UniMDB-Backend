@@ -4,6 +4,7 @@ public class ReviewResponseList
 {
     public uint Id { get; set; } = 0;
     public uint User_Id { get; set;} = 0;
+    public string Username_User {get; set;}
     public string Movie_Id { get; set; } = string.Empty;
     public byte Score { get; set; } = 0;
     public string Comment { get; set; } = string.Empty;

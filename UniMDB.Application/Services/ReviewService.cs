@@ -9,9 +9,12 @@ namespace UniMDB.Application.Services;
 public class ReviewService : IReviewService
 {
     private readonly IReviewRepository _reviewRepository;
-    public ReviewService(IReviewRepository reviewRepository)
+    private readonly IUserService _userService;
+
+    public ReviewService(IReviewRepository reviewRepository,IUserService userService)
     {
-        _reviewRepository = reviewRepository;
+    _reviewRepository = reviewRepository;
+    _userService = userService;  
     }
 
     // CREATE
@@ -114,9 +117,10 @@ public class ReviewService : IReviewService
         };
     }   
     public async Task<ReviewsMoviesResponse> GetAllReviewsByMovieId(string id_movie)
-    {
+{
     List<Review> reviews = await _reviewRepository.GetAllReviewsByMovieIdAsync(id_movie);
 
+    // Nenhuma review → retorna vazio
     if (reviews == null || reviews.Count == 0)
     {
         return new ReviewsMoviesResponse
@@ -126,19 +130,30 @@ public class ReviewService : IReviewService
         };
     }
 
-    return new ReviewsMoviesResponse
+    var response = new ReviewsMoviesResponse
     {
         Movies_Id = id_movie,
-        Reviews = reviews.Select(r => new ReviewResponseList
+        Reviews = new List<ReviewResponseList>()
+    };
+
+    foreach (var r in reviews)
+    {
+        // Buscar username de cada usuário
+        var user = await _userService.GetUserById(r.id_review_user);
+
+        response.Reviews.Add(new ReviewResponseList
         {
             Id = r.id_review,
             User_Id = r.id_review_user,
+            Username_User = user?.Username,   // <-- agora vem certo
             Movie_Id = r.id_movie_mdb,
             Score = r.review,
             Comment = r.comment,
             Created_at = r.created_at
-        }).ToList()
-    };
+        });
+    }
+
+    return response;
     }
     // UPDATE
     public async Task<ReviewResponse> UpdateReview(uint id_review, ReviewUpdate review)

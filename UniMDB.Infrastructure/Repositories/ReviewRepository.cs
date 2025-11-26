@@ -77,10 +77,13 @@ public class ReviewRepository : IReviewRepository
     
     public async Task<List<Review>> GetAllReviewsByMovieIdAsync(string id_movie)
     {
-    return await _context.Reviews
-        .AsNoTracking()
-        .Where(r => r.id_movie_mdb == id_movie)
-        .ToListAsync();
+        return await _context.Reviews
+            .AsNoTracking()
+            .Where(r => r.id_movie_mdb == id_movie)
+            .ToListAsync();
+        
+
+
     }
 
     
