@@ -1,0 +1,17 @@
+button{
+  padding: 10px;
+  margin-bottom: 10px;
+  font-family: "Press Start 2P", system-ui;
+  background-color: #e6d8ff;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid #5b3992;
+}
+
+button:hover {
+  background-color: #b48eff;
+  border: 2px solid #000000;
+}
+button:active {
+    transform: scale(0.95);
+}

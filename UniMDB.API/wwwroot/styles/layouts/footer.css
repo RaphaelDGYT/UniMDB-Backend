@@ -1,0 +1,13 @@
+footer {
+  align-self: stretch;        
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 12px 10px;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 11px;
+  background: #e6d8ff;
+  z-index: 10;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+ 

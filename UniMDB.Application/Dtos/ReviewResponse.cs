@@ -1,11 +1,15 @@
-﻿namespace UniMDB.Application.Dtos;
+﻿using UniMDB.Domain.Entities;
 
-//  DTO usado pela API para obter apenas as partes importantes da Review
+namespace UniMDB.Application.Dtos;
+
+//  DTO começam com maiuscula
 
 public class ReviewResponse
 {
-    public string user { get; set; }
-    public byte score { get; set; }
-    public string comment { get; set; }
-    public DateTime created_at { get; set; }
+    public uint Id { get; set; } = 0;
+    public uint User_Id { get; set; } = 0;
+    public string Movie_Id { get; set; } = string.Empty;
+    public byte Score { get; set; } = 0;
+    public string Comment { get; set; } = string.Empty;
+    public DateTime? Created_at { get; set; } = null;
 }

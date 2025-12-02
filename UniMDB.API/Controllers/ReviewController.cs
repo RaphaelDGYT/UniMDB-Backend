@@ -2,16 +2,9 @@
 using UniMDB.Application.Dtos;
 using UniMDB.Application.Services;
 using UniMDB.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace UniMDB.API.Controllers;
-
-/*
- 
-    As classes Controllers não vão ser responsáveis pela implementação das funções que envolvam o banco de dados
-    diretamente, aqui somente vamos implementar na API. Essa implementação com o banco de dados será feita no
-    Applications.Services
-
-*/
 
 [ApiController]
 [Route("api/[controller]")]
@@ -25,17 +18,39 @@ public class ReviewController : ControllerBase
     }
 
 
-    [HttpGet("get/{id}")]
-    public async Task<ActionResult<ReviewResponse>> GetReviewById(uint id)
+    // CREATE
+    [HttpPost("add"), Produces("application/json")]
+    public async Task<ActionResult<ReviewResponse>> AddReview([FromBody]ReviewCreation review)
     {
-
         try
         {
-            var review = await _reviewService.GetReviewById(id);
+            ReviewResponse reviewNova = await _reviewService.AddReview(review);
 
-            if (review == null)
+            if (reviewNova.Id == 0)
             {
-                return NotFound($"ID {id} não foi encontrado");
+                return BadRequest(review);
+            }
+
+            return CreatedAtAction(nameof(GetReview), new { id = reviewNova.Id }, reviewNova);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    // READ
+    [HttpGet("get/{id}"), Produces("application/json")]
+    public async Task<ActionResult<ReviewResponse>> GetReview([FromRoute]uint id)
+    {
+        try
+        {
+            ReviewResponse review = await _reviewService.GetReviewById(id);
+
+            if (review.Id == 0)
+            {
+                review.Id = id;
+                return NotFound(review);
             }
 
             return Ok(review);
@@ -44,15 +59,35 @@ public class ReviewController : ControllerBase
         {
             return StatusCode(500, ex.Message);
         }
-        
     }
 
-    [HttpGet("getall/{id_user}")]
-    public async Task<ActionResult<List<ReviewResponse>>> GetAllReviewsByUser(uint id_user)
+    [HttpGet("getall/{id_movie}"), Produces("application/json")]
+    public async Task<ActionResult<List<ReviewResponseList>>> GetAllReviewsByMovieId([FromRoute] string id_movie)
+    {
+    try
+    {
+        var reviews = await _reviewService.GetAllReviewsByMovieId(id_movie);
+
+        if (reviews == null || reviews.Reviews == null || reviews.Reviews.Count == 0)
+        {
+            return NotFound($"Nenhuma review encontrada para o filme ID ({id_movie}).");
+        }
+
+        return Ok(reviews);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, ex.Message);
+    }
+    }
+
+    /*
+    [HttpGet("getall/{id_user}"), Produces("application/json")]
+    public async Task<ActionResult<List<ReviewResponseAPI>>> GetAllReviewsByUser(uint id_user)
     {
         try
         {
-            var reviews = await _reviewService.GetAllReviewsByUser(id_user);
+            var reviews = await _reviewService.GetAllReviewsByUserId(id_user);
 
             if (reviews == null)
             {
@@ -65,39 +100,22 @@ public class ReviewController : ControllerBase
         {
             return StatusCode(500, ex.Message);
         }
-        
-    }
 
-    [HttpPost("add")]
-    public async Task<ActionResult<ReviewCreation>> AddReview(ReviewCreation review)
+    }
+    */
+    
+
+    // UPDATE
+    [HttpPut("update/{id}"), Produces("application/json")]
+    public async Task<ActionResult<ReviewResponse>> UpdateReview([FromQuery]uint id, [FromBody] ReviewUpdate reviewNova)
     {
         try
         {
-            var reviewNova = await _reviewService.AddReview(review);
+            ReviewResponse reviewAtualizada = await _reviewService.UpdateReview(id, reviewNova);
 
-            if (reviewNova == null)
+            if (reviewAtualizada.Id == 0)
             {
-                return BadRequest(review);
-            }
-
-            return CreatedAtAction("Review criada com sucesso", review);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
-
-    [HttpPut("update/{id}")]
-    public async Task<ActionResult<ReviewResponse>> UpdateReview(uint id, ReviewCreation review)
-    {
-        try
-        {
-            var reviewAtualizada = await _reviewService.UpdateReview(id, review);
-
-            if (reviewAtualizada == null)
-            {
-                return BadRequest(review);
+                return BadRequest(reviewNova);
             }
 
             return Ok(reviewAtualizada);
@@ -108,25 +126,24 @@ public class ReviewController : ControllerBase
         }
     }
 
+    // DELETE
     [HttpDelete("delete/{id}")]
-    public async Task<ActionResult<Review>> DeleteUser(uint id)
+    public async Task<ActionResult<bool>> UpdateReview(uint id)
     {
-
         try
         {
-            var reviewDeletada = await _reviewService.DeleteReview(id);
+            bool reviewDeletada = await _reviewService.DeleteReview(id);
 
-            if (!reviewDeletada)
+            if (reviewDeletada)
             {
-                return BadRequest($"Não foi possível delete o ID ( {id} )");
+                return Ok(reviewDeletada);
             }
 
-            return Ok(reviewDeletada);
+            return BadRequest(reviewDeletada);
         }
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
         }
-
     }
 }

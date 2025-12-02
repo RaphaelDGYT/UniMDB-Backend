@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/loginRegister.css">
+    <link rel="stylesheet" href="../styles/layouts/_headerLogReg.css">
+    <link rel="stylesheet" href="../styles/components/_buttonExample.css">
+    <link rel="stylesheet" href="../styles/layouts/footer.css">
+    <link rel="stylesheet" href="../styles/layouts/responsive.css">
+
+    <link rel="shortcut icon" href="../images/logo-separada.png" type="image/png">
+    <title>Registre-se</title>
+</head>
+<body>
+    <header>
+        <img src="../images/logo-separada.png" alt="uniMDB"> 
+    </header>
+
+    <main>
+        <div class="containers">
+            <form id="form" onsubmit="registerUser(event)">
+                <div class="box">
+                    <label for="name">Nome</label><br>
+                    <input type="text" name="name" id="name" required>
+                </div>
+
+                <div class="box">
+                    <label for="username">Username</label><br>
+                    <input type="text" name="username" id="username" required>
+                </div>
+
+                <div class="box">
+                    <label for="email">Email</label><br>
+                    <input type="email" name="email" id="email" required>
+                </div>  
+
+                <div class="box">
+                    <label for="password">Senha</label><br>
+                    <input type="password" name="password" id="password" required>
+                </div>
+
+                <div class="box">
+                    <label for="confPassword">Confirme a senha</label><br>
+                    <input type="password" name="confPassword" id="confPassword" required oninput="confirmPassword(this)">
+                </div>
+
+                <div class="botao">
+                    <button type="submit" id="button">Registrar-se</button>
+                </div>    
+            </form>
+
+            <div class="botao">
+                <a href="../pages/login.html">
+                <button type="button">Já cadastrado</button>
+                </a>
+            </div>            
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 UniMDB. Todos os direitos reservados.</p>
+    </footer>
+</body>
+<script src="../scripts/pages/register.js" defer></script>
+
+</html>

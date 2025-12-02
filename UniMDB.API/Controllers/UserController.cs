@@ -1,22 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bogus.Bson;
+using Microsoft.AspNetCore.Mvc;
 using UniMDB.Application.Dtos;
 using UniMDB.Application.Services;
 using UniMDB.Domain.Entities;
+using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Mvc;
+using UniMDB.Infrastructure.Repositories;
 
 namespace UniMDB.API.Controllers;
-
-/*
- 
-    As classes Controllers não vão ser responsáveis pela implementação das funções que envolvam o banco de dados
-    diretamente, aqui somente vamos implementar na API. Essa implementação com o banco de dados será feita no
-    Applications.Services
-
-*/
 
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
+    // utilização do service para meio de comunicação com o repositorys e fazer validações.
     private readonly IUserService _userService;
 
     public UserController(IUserService userService)
@@ -24,34 +21,50 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
+    // utilização de [FromBody], [FromQuery] e [FromRoute]
+    //[FromQuery] Serve para ler dados que vêm da query string da URL a parte da que vem depois
+    //  do ? e separada por &.
+    // [FromRoute]Serve para ler dados que vêm da rota da URL
+    // Os valores que fazem parte da URL em si, não da query string.
+    // [FromBody]Normalmente usado em requisições POST, PUT ou PATCH, quando você envia um objeto JSON ou XML.
+    // Os dados não vêm da URL, mas sim do body da requisição.
 
-    [HttpGet("getall")]
-    public async Task<ActionResult<List<UserResponseAPI>>> GetAllUsers()
+
+
+    // CREATE
+    [HttpPost("add"), Produces("application/json")]
+    public async Task<ActionResult<UserResponse>> AddUser([FromBody]UserCreation user)
     {
         try
         {
-            var users = await _userService.GetAllUsers();
+            UserResponse userNovo = await _userService.AddUser(user);
 
-            return Ok(users);
+            if (userNovo.Id == 0)
+            {
+                return BadRequest(user);
+            }
+
+            return CreatedAtAction(nameof(GetUser),new { id = userNovo.Id }, userNovo);
+
         }
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
         }
     }
-
-    [HttpGet("get/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> GetUser(uint id)
+    
+    // READ
+    [HttpGet("get/{id}"), Produces("application/json")]
+    public async Task<ActionResult<UserResponse>> GetUser([FromQuery]uint id)
     {
-
         try
         {
+            UserResponse user = await _userService.GetUserById(id);
 
-            var user = await _userService.GetUser(id);
-
-            if (user == null)
+            if (user.Id == 0)
             {
-                return NotFound($"ID {id} não foi encontrado");
+                user.Id = id;
+                return NotFound(user);
             }
 
             return Ok(user);
@@ -60,9 +73,49 @@ public class UserController : ControllerBase
         {
             return StatusCode(500, ex.Message);
         }
-
     }
 
+    [HttpGet("getreviews/{id}"), Produces("application/json")]
+    public async Task<ActionResult<UserReviewsResponse>> GetUserReviews([FromQuery]uint id)
+    {
+        try
+        {
+            UserReviewsResponse reviews = await _userService.GetAllReviewsByUserId(id);
+
+            if (reviews.UserAutor.id_user == 0)
+            {
+                NotFound(reviews);
+            }
+
+            return Ok(reviews);
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    [HttpPost("login"), Produces("application/json")]
+    public async Task<ActionResult<LoginResponse>> GetUserBySession([FromBody]UserLogin user)
+    {
+        try
+        {
+            LoginResponse userNovo = await _userService.GetUserBySession(user);
+
+            if (userNovo == null)
+            {
+                    return Unauthorized("Email ou senha inválidos");
+            }
+
+            return Ok(userNovo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    /*
     [HttpGet("getbyreview/{id}")]
     public async Task<ActionResult<User>> GetUserByReview(uint id_review)
     {
@@ -84,67 +137,60 @@ public class UserController : ControllerBase
         }
 
     }
+    */
+    [HttpGet("GetAllFavorite/{id}")]
+        public async Task<IActionResult> GetAllFavoritesByUserId(uint id)
+        {
+            var result = await _userService.GetAllFavoritesByUserId(id);
 
-    [HttpPost("add")]
-    public async Task<ActionResult<UserResponseAPI>> AddUser(UserRegistration user)
+            
+            if (result == null)
+                return NotFound("Nenhum favorito encontrado para esse usuário.");
+
+            return Ok(result);
+        }
+    
+
+
+    // UPDATE
+    [HttpPut("update/{id}"), Produces("application/json")]
+    public async Task<ActionResult<UserResponse>> UpdateUser([FromQuery]uint id,[FromBody]UserCreation userNovo)
     {
         try
         {
-            var userNovo = await _userService.AddUser(user);
+            UserResponse userAtualizado = await _userService.UpdateUser(id, userNovo);
 
-            if (userNovo.GetType() == typeof(UserResponseAPI))
+            if (userAtualizado.Id == 0)
             {
-                return CreatedAtAction("Usuário adicionado", user);
+                return BadRequest(userNovo);
             }
 
-            return BadRequest(user);
+            return Ok(userAtualizado);
         }
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
         }
     }
-
-    [HttpPut("update/{id}")]
-    public async Task<ActionResult<UserResponseAPI>> UpdateUser(uint id, UserRegistration userNovo)
-    {
-
-        try
-        {
-            var userAtualizado = await _userService.UpdateUser(id, userNovo);
-
-            if (userAtualizado.GetType() == typeof(UserResponseAPI))
-            {
-                return Ok(userAtualizado);
-            }
-
-            return BadRequest(userNovo);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
-
+    
+    // DELETE
     [HttpDelete("delete/{id}")]
-    public async Task<ActionResult<User>> DeleteUser(uint id)
+    public async Task<ActionResult<bool>> DeleteUser(uint id)
     {
-
         try
         {
-            var userDeletado = await _userService.DeleteUser(id);
+            bool userDeletado = await _userService.DeleteUser(id);
 
-            if (userDeletado.GetType() == typeof(User))
+            if (userDeletado)
             {
                 return Ok(userDeletado);
             }
 
-            return BadRequest($"Não foi possível delete o ID ( {id} )");
+            return BadRequest(userDeletado);
         }
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
         }
-
     }
 }

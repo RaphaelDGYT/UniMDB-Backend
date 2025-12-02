@@ -17,4 +17,7 @@ public class ApplicationDbContext : DbContext
     //  Cada propriedade dessa é uma tabela dentro do nossso banco de dados
     public DbSet<User> Users { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<Favorite> Favorites { get; set; }
+
+
 }

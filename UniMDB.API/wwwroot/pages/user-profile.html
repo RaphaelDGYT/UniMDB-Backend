@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/layouts/_header.css">
+    <link rel="stylesheet" href="../styles/layouts/footer.css">
+    <link rel="stylesheet" href="../styles/layouts/userprofile.css">
+    <link rel="stylesheet" href="../styles/layouts/content.css">
+    <link rel="stylesheet" href="../styles/layouts/responsive.css">
+    <link rel="shortcut icon" href="../images/logo-separada.png" type="image/png">
+    <title>Perfil do usuário</title>
+</head>
+<body>
+    <header>
+        <a href="../index.html" class="logo btn">
+            <img src="../images/logo-separada.png" alt="uniMDB">
+        </a>
+        <div class="headerSemLogin" id="headerSemLogin">
+            <a href="../pages/login.html" class="nav-link">Login</a>
+            <a href="../pages/register.html" class="nav-link">Registro</a>
+        </div>
+        <div class="headerComLogin" id="headerComLogin">
+            <a href="../pages/review.html" class="nav-link">Avaliados</a>
+            <a href="../pages/favorites.html" class="nav-link">Favoritos</a>
+            <a href="" class="nav-link" onclick="logout(); return false; ">Sair</a>
+        </div>
+    </header>
+    <main>
+        <div class="perfil-info">
+            <div class="linha-info">
+                <span class="titulo">Seu nome:</span>
+                <span id="nome"></span>
+            </div>
+            <div class="linha-info">
+                <span class="titulo">Seu apelido:</span>
+                <span id="username"></span>
+            </div>
+            <div class="linha-info">
+                <span class="titulo">Seu email:</span>
+                <span id="email"></span>
+            </div>
+        </div>
+
+        <a href="../pages/favorites.html" class="btn">
+            <h1 class ="title" id="title">Favoritos ⇒</h1>
+        </a>
+        <div class="favorites">
+            <label id="favoritestitle"></label><br>
+            <div id="favorites"></div>
+        </div>
+        
+        <a href="../pages/review.html" class="btn">
+            <h1 class ="title" id="title">Avaliados ⇒</h1>
+        </a>
+        <div class="filmeReviews">
+            <label id="filmeReview"></label><br>
+            <div id="filmeReviews"></div>
+        </div>
+    </main>
+    <script src="../scripts/pages/login.js" defer></script>
+    <script src="../scripts/services/validation/userValidation.js" defer></script>
+    <script src="../scripts/pages/user-profile.js" defer></script>
+</body>
+</html>

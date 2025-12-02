@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/loginRegister.css">
+    <link rel="stylesheet" href="../styles/layouts/_headerLogReg.css">
+    <link rel="stylesheet" href="../styles/components/_buttonExample.css">
+    <link rel="stylesheet" href="../styles/layouts/footer.css">
+    <link rel="stylesheet" href="../styles/layouts/responsive.css">
+    <link rel="shortcut icon" href="../images/logo-separada.png" type="image/png">
+    <title>Login</title>
+
+</head>
+<body>
+    <header>
+           <img src="../images/logo-separada.png" alt="uniMDB"> 
+    </header>
+
+    <main>
+        <div class="containers">
+        <form id="loginForm" onsubmit="loginUsuario(event)">
+            <div class="box">
+                <label for="email">Email</label><br>
+                <input type="email" name="email" id="email" required>
+            </div>  
+            <div class="box">
+                <label for="senha">Senha</label><br>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="botao">
+                <button type="submit" >Entrar</button>
+            </div>  
+        </form>
+
+        <div class="botao">
+            <a href="../pages/register.html">
+                <button>Registrar-se</button>
+            </a>
+        </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 UniMDB. Todos os direitos reservados.</p>
+    </footer>
+    <script src="../scripts/pages/login.js" defer></script>
+</body>
+</html>

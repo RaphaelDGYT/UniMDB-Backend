@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+ 
+#favoritestitle{
+    font-family: "Press Start 2P", system-ui;
+    font-size: 20px;
+    color: #5b3992;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+
+ 
