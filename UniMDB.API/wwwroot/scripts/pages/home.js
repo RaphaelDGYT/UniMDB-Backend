@@ -20,6 +20,9 @@ function fetchPesquisaFilmes(valor)
             filmes_home.style.display = 'none';  
             return res;
         })
+        .catch(() => {
+            window.location.href = `/pages/error.html`;
+        })
      
     return resultado
 }

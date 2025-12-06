@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/layouts/_header.css">
+    <link rel="stylesheet" href="./styles/layouts/content.css">
+    <link rel="stylesheet" href="./styles/layouts/footer.css">
+    <link rel="stylesheet" href="./styles/layouts/responsive.css">
+    <link rel="stylesheet" href="./styles/components/_buttonExample.css">
+    <link rel="shortcut icon" href="images/logo-separada.png" type="image/png">
+    <title>Página Inicial</title>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo btn">
+            <img src="./images/logo-separada.png" alt="uniMDB">
+        </a>
+        <div class="headerSemLogin" id="headerSemLogin">
+            <a href="./pages/login.html" class="nav-link">Login</a>
+            <a href="./pages/register.html" class="nav-link">Registro</a>
+        </div>
+        <div class="headerComLogin" id="headerComLogin">
+            <a href="./pages/review.html" class="nav-link">Avaliados</a>
+            <a href="./pages/favorites.html" class="nav-link">Favoritos</a>
+            <a href="./pages/user-profile.html" class="nav-link">Perfil</a>
+        </div>
+    </header>
+    <main>
+        <div class="erro-aviso" id="erro-aviso">
+            <div class="erro">
+                <h2 for="erro-titulo">Erro na API</label><br>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 UniMDB. Todos os direitos reservados.</p>
+    </footer>
+</body>
+<script src="./scripts/pages/home.js" defer></script>
+<script src="./scripts/services/validation/userValidation.js" defer></script>
+</html>
